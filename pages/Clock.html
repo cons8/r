@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>墨航时钟 - 电子墨水屏优化版</title>
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            font-family: 'Helvetica Neue', monospace;
+            color: #ecf0f1;
+        }
+
+        .clock-container {
+            position: relative;
+            width: 80%;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        /* 数字时钟样式 */
+        .digital-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        /* 指针动画 */
+        .analog-clock {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: 50% 100%;
+            background: #ecf0f1;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .hour-hand {
+            width: 6px;
+            height: 60px;
+            margin-left: -3px;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .minute-hand {
+            width: 4px;
+            height: 80px;
+            margin-left: -2px;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .second-hand {
+            width: 2px;
+            height: 90px;
+            margin-left: -1px;
+            background: #ff4757;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 动态数字效果 */
+        .digital-display span {
+            display: inline-block;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .digital-display span:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 600px) {
+            .clock-container {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .digital-display {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="analog-clock">
+            <div class="hand hour-hand"></div>
+            <div class="hand minute-hand"></div>
+            <div class="hand second-hand"></div>
+        </div>
+        <div class="digital-display" id="time">
+            <span id="hours">00</span>:
+            <span id="minutes">00</span>:
+            <span id="seconds">00</span>
+        </div>
+        <div class="date-display" id="date"></div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const timeDisplay = document.getElementById('time');
+        const dateDisplay = document.getElementById('date');
+        const hourHand = document.querySelector('.hour-hand');
+        const minuteHand = document.querySelector('.minute-hand');
+        const secondHand = document.querySelector('.second-hand');
+
+        function updateTime() {
+            const now = new Date();
+            
+            // 时间部分
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            // 更新显示
+            timeDisplay.innerHTML = `
+                <span>${hours}</span>:
+                <span>${minutes}</span>:
+                <span>${seconds}</span>
+            `;
+            dateDisplay.textContent = now.toLocaleDateString('zh-CN', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            // 指针角度计算
+            const hourDeg = (hours % 12) * 30 + (minutes / 60) * 30;
+            const minuteDeg = minutes * 6 + (seconds / 60) * 6;
+            const secondDeg = seconds * 6;
+
+            // 应用旋转动画
+            hourHand.style.transform = `rotate(${hourDeg}deg)`;
+            minuteHand.style.transform = `rotate(${minuteDeg}deg)`;
+            secondHand.style.transform = `rotate(${secondDeg}deg)`;
+        }
+
+        // 动画优化：使用requestAnimationFrame
+        function animate() {
+            updateTime();
+            requestAnimationFrame(animate);
+        }
+
+        // 初始化
+        animate();
+        updateTime(); // 首次加载立即更新
+    </script>
+</body>
+</html>
