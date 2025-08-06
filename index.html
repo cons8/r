@@ -15,7 +15,6 @@
         .header {
             width: 100%;
             height: 8vh;
-            border: 1px solid black;
             display: flex;
             flex-direction: column;
             justify-content: space-around;
@@ -25,19 +24,28 @@
         .header .title {
             font-weight: bold;
         }
-        .tool-card {
+
+        .app {
+            display: flex;
+            flex-direction: column;
             background: white;
             padding: 1rem;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
             text-align: center;
-        }
-        .toPage{
             border: 1px solid black;
-            padding: 10px;
-            display: block;
-            height: 80x;
-            width: 80px;
+            text-decoration: none;
+            color: black;
+        }
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 100px);
+            gap: 1rem;
+        }
+        .main { 
+            padding: 3rem;
+        }
+        .message {
+            margin-bottom: 2rem;
         }
     </style>
 </head>
@@ -45,14 +53,26 @@
 <body>
     <header class="header">
         <div class="title">墨枢</div>
-        <div>Kindle工具集</div>
+        <!-- <div>Kindle工具集</div> -->
     </header>
-    <main>
-        <div class="card">
-            <a class="toPage" href="./pages/Clock.html">时钟</a>
-            <!-- <div class="title">Clock For Kindle</div> -->
+    <main class="main">
+        <div class="message">
+            <h1>如果说<br>书籍是人类进步的阶梯<br>那电纸书就是人类进步的电梯</h1>
+        </div>
+        <div class="app-list">
+            <a class="app" href="./pages/Clock.html">
+                <div class="avater"><svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 16 16"><path fill="#000000" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m2.293 11.707L7 8.414V4h2v3.586l2.707 2.707z"/></svg></div>
+                <div class="title"> 时钟</div>
+            </a>
+            <a class="app" href="https://www.maemo.cc/Timer/">
+                <div class="avater"><svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 26 26"><g fill="#000000"><path fill-rule="evenodd" d="M13 6a.5.5 0 0 1 .5-.5A7.5 7.5 0 1 1 6 13a.5.5 0 0 1 1 0a6.5 6.5 0 1 0 6.5-6.5a.5.5 0 0 1-.5-.5" clip-rule="evenodd"/><path d="M11 6.25a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0m-2.5 1.5a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0M7 10.25a.75.75 0 1 1-1.5 0a.75.75 0 0 1 1.5 0"/><path fill-rule="evenodd" d="M8.947 14.224a.5.5 0 0 0-.223-.671l-2-1a.5.5 0 0 0-.448.894l2 1a.5.5 0 0 0 .671-.223" clip-rule="evenodd"/><path fill-rule="evenodd" d="M6.854 12.646a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 1 1-.708-.707l1.5-1.5a.5.5 0 0 1 .708 0M13.5 9.5a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 1 .5-.5" clip-rule="evenodd"/><path fill-rule="evenodd" d="M17 13a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 .5.5" clip-rule="evenodd"/><path fill-rule="evenodd" d="M13 24.5c6.351 0 11.5-5.149 11.5-11.5S19.351 1.5 13 1.5S1.5 6.649 1.5 13S6.649 24.5 13 24.5m0 1c6.904 0 12.5-5.596 12.5-12.5S19.904.5 13 .5S.5 6.096.5 13S6.096 25.5 13 25.5" clip-rule="evenodd"/></g></svg></svg></div>
+                <div class="title"> 盖泡面</div>
+            </a>
+            <a class="app" href="https://r.qq.com">
+                <div class="avater"><svg t="1754481729641" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2527" width="64" height="64"><path d="M912.001826 511.993556c0 287.074775-112.914143 400.00827-399.988919 400.00827S111.985286 799.068331 111.985286 511.993556c0-287.074775 112.933494-399.988918 400.027621-399.988918 287.055424 0 399.969567 112.914143 399.969567 400.008269z" fill="#08CDFF" p-id="2528"></path><path d="M653.392638 516.986161c78.082017 0 141.379731 50.042155 141.379731 111.772423s-63.278363 111.753072-141.379731 111.753073a173.734906 173.734906 0 0 1-55.03476-8.766086c-8.456466-2.825272-28.252725 12.791131-35.760983 8.766086-7.52761-4.005695-2.78657-27.672189-9.191811-32.722848a114.636398 114.636398 0 0 1-30.30395-35.528769 91.685897 91.685897 0 0 1-11.107578-43.501456c0-61.730268 63.317065-111.772423 141.399082-111.772423z m43.888479 73.108763a9.811049 9.811049 0 0 0-9.811048 9.811049 9.811049 9.811049 0 0 0 9.811048 9.811049 9.811049 9.811049 0 0 0 9.791698-9.811049 9.811049 9.811049 0 0 0-9.791698-9.811049z m-81.623282 0a9.811049 9.811049 0 0 0-9.811049 9.811049 9.811049 9.811049 0 0 0 9.811049 9.811049 9.811049 9.811049 0 0 0 9.811048-9.811049 9.811049 9.811049 0 0 0-9.811048-9.811049z" fill="#FFFFFF" p-id="2529"></path></svg></div>
+                <div class="title">微信读书</div>
+            </a>
         </div>
     </main>
 </body>
-
 </html>
