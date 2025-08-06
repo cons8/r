@@ -4,3 +4,7 @@ kindle导航/资源整合
 专为Kindle浏览器设计的沉浸式导航系统，整合资源聚合、书籍推荐、工具集成三大核心模块
 ## 📚 使用指南
 之间访问页面 cons8.github.io/r 即可
+
+## 🌹项目预览
+
+<img width="350" alt="项目截图" src="./static/screenshot.png" />
