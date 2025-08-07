@@ -13,7 +13,8 @@
         }
 
         body {
-            min-height: 100vh; /* 防止内容高度变化导致的布局重排 */
+            min-height: 100vh;
+            /* 防止内容高度变化导致的布局重排 */
         }
 
         .header {
@@ -73,18 +74,30 @@
 
         .log {
             width: fit-content;
-            min-width: 400px;
+            /* 宽度自适应内容 */
+            min-width: 300px;
+            /* 最小宽度 */
+            max-width: 95vw;
+            /* 最大宽度不超过屏幕的95% */
             position: fixed;
-            bottom: 40%;
-            left: calc(50% - 200px);
+            /* 固定定位 */
+            top: 50%;
+            /* 顶部距离视口顶部50% */
+            left: 50%;
+            /* 左侧距离视口左侧50% */
+            transform: translate(-50%, -50%);
+            /* 自身向左上偏移50%宽度/高度，实现居中 */
             background: white;
             padding: 1rem;
             border-radius: 8px;
             border: 2px solid black;
-            display: flex;
+            display: none;
+            /* 默认隐藏 */
             flex-direction: column;
             align-items: center;
-            display: none;
+            /* 内部元素水平居中 */
+            z-index: 1000;
+            /* 确保在最上层（可选，避免被其他元素遮挡） */
         }
 
         .log textarea {
@@ -247,7 +260,7 @@
             document.querySelector('.message h1').innerHTML = log;
             hideLog();
         } else {
-            showLog({ title: "提示", content: "请输入内容" });
+            showLog({ title: "提示" });
         }
     }
 
@@ -263,7 +276,7 @@
         return text.replace(/\r?\n/g, "<br/>"); // 匹配 \n 或 \r\n，替换为 <br/>
     }
 
-    function showLog({ title = "提示", content = "" }) {
+    function showLog({ title = "提示", content = "欢迎使用墨枢！<br>在这里你可以自定义欢迎语和Logo的显示与隐藏。" }) {
         document.querySelector('.mask').style.display = 'block';
         document.querySelector('.log').style.display = 'flex';
         document.querySelector('.log-content').innerHTML = content;
