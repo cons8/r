@@ -83,13 +83,17 @@
             margin: 1rem 0;
             padding: 0.5rem;
             height: fit-content;
+            border: 2px solid black;
         }
 
         .log .log-submit {
-            width: 70%;
+            width: 100%;
             padding: 0.5rem 1rem;
             border-radius: 4px;
+            background-color: white;
+            border: 2px solid black;
             cursor: pointer;
+            margin: 0.5rem 0;
         }
     </style>
 </head>
@@ -101,7 +105,7 @@
     </header>
     <main class="main">
         <div class="message">
-            <h1>如果说<br>书籍是人类进步的阶梯<br>那电纸书就是人类进步的电梯</h1>
+            <h1>...</h1>
         </div>
         <div class="app-list">
             <a class="app" href="https://lecepin.github.io/kindle-time/">
@@ -148,12 +152,14 @@
             </div>
         </div>
     </main>
-    <div class="mask"></div>
+    <div class="mask" onclick="hideLog()"></div>
     <div class="log">
         <div class="log-content">请输入内容</div>
         <textarea name="" id=""></textarea>
         <button class="log-submit" onclick="submitLog()">提交</button>
+        <button class="log-submit" onclick="resetLog()">恢复默认欢迎语</button>
     </div>
+
 </body>
 <script>
     let config = {
@@ -170,11 +176,14 @@
             } catch (e) {
                 console.error('配置解析失败:', e);
             }
+        }else {
+            document.querySelector('.message h1').innerHTML = config.message;
         }
     }
     function setting() {
-        showLog("请输入新的欢迎语:");
+        showLog("请设置新的欢迎语:");
     }
+
     function submitLog() {
         let log = document.querySelector('textarea').value;
         log = fixText(log);
@@ -187,6 +196,12 @@
             showLog('请输入内容');
         }
     }
+    function resetLog() {
+        config.message = "如果说<br>书籍是人类进步的阶梯<br>那电纸书就是人类进步的电梯";
+        localStorage.setItem('config', JSON.stringify(config));
+        document.querySelector('.message h1').innerHTML = config.message;
+        hideLog();
+    }
 
     function fixText(text) {
         var replaceRegex = /(\n\r|\r\n|\r|\n)/g;
@@ -195,7 +210,6 @@
 
         return text.replace(replaceRegex, "<br/>");
     }
-
     function showLog(content) {
         document.querySelector('.mask').style.display = 'block';
         document.querySelector('.log').style.display = 'flex';
@@ -205,6 +219,7 @@
         document.querySelector('.mask').style.display = 'none';
         document.querySelector('.log').style.display = 'none';
     }
+
     init()
 </script>
 
