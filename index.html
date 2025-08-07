@@ -12,24 +12,36 @@
             box-sizing: border-box;
         }
 
+        body {
+            min-height: 100vh; /* 防止内容高度变化导致的布局重排 */
+        }
+
         .header {
             width: 100%;
             height: 8vh;
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
+            justify-content: center;
             align-items: center;
         }
 
         .header .title {
             font-weight: bold;
+            line-height: 1;
+        }
+
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            align-items: center;
         }
 
         .app {
             display: flex;
             flex-direction: column;
             background: white;
-            padding: 1rem;
+            padding: 0.8rem;
             border-radius: 8px;
             text-align: center;
             border: 1px solid black;
@@ -39,11 +51,6 @@
 
         .app .avater {
             margin-bottom: 0.5rem;
-        }
-        .app-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, 100px);
-            gap: 1rem;
         }
 
         .main {
@@ -65,9 +72,11 @@
         }
 
         .log {
+            width: fit-content;
+            min-width: 400px;
             position: fixed;
-            bottom: 50%;
-            left: calc(50% - 150px);
+            bottom: 40%;
+            left: calc(50% - 200px);
             background: white;
             padding: 1rem;
             border-radius: 8px;
@@ -79,11 +88,37 @@
         }
 
         .log textarea {
+            min-height: 80px;
             width: 100%;
-            margin: 1rem 0;
             padding: 0.5rem;
             height: fit-content;
             border: 2px solid black;
+            border-radius: 4px;
+        }
+
+        .log-header {
+            width: 100%;
+            display: flex;
+            border-bottom: 1px solid black;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .log-body {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid black;
+            width: 100%;
+        }
+
+        .log-submit-container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .log-submit-container button {
+            margin: 0.5rem;
         }
 
         .log .log-submit {
@@ -141,7 +176,7 @@
                     </svg></div>
                 <div class="title">微信读书</div>
             </a>
-            <div class="app" onclick="setting()">
+            <a class="app" href="javascript:void(0);" onclick="setting()">
                 <div class="avater">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
                         <path fill="#000000"
@@ -149,22 +184,36 @@
                     </svg>
                 </div>
                 <div class="title">设置</div>
-            </div>
+            </a>
         </div>
     </main>
     <div class="mask" onclick="hideLog()"></div>
     <div class="log">
+        <div class="log-header">
+            <div class="log-title">标题</div>
+            <div class="log-close" onclick="hideLog()">x</div>
+        </div>
         <div class="log-content">请输入内容</div>
-        <textarea name="" id=""></textarea>
-        <button class="log-submit" onclick="submitLog()">提交</button>
-        <button class="log-submit" onclick="resetLog()">恢复默认欢迎语</button>
+        <div class="log-body">
+            <textarea name="" id="" placeholder="请输入欢迎语"></textarea>
+            <div class="log-submit-container">
+                <button class="log-submit" onclick="resetLog()">恢复默认欢迎语</button>
+                <button class="log-submit" onclick="submitLog()">更改欢迎语</button>
+            </div>
+        </div>
+        <div class="log-body">
+            <button id="setLogo" class="log-submit" onclick="setLogo()">隐藏Logo</button>
+        </div>
+
     </div>
 
 </body>
 <script>
     let config = {
-        message: "如果说<br>书籍是人类进步的阶梯<br>那电纸书就是人类进步的电梯"
+        message: "如果说<br>书籍是人类进步的阶梯<br>那电纸书就是人类进步的电梯",
+        logo: true
     }
+
     function init() {
         // 获取用户自定义配置
         let userConfig = localStorage.getItem('config');
@@ -173,29 +222,35 @@
                 userConfig = JSON.parse(userConfig);
                 config = { ...config, ...userConfig };
                 document.querySelector('.message h1').innerHTML = config.message;
+                if (!config.logo) {
+                    document.querySelector('.header').style.display = 'none';
+                    document.querySelector('#setLogo').innerHTML = '显示Logo';
+                }
             } catch (e) {
                 console.error('配置解析失败:', e);
             }
-        }else {
+        } else {
             document.querySelector('.message h1').innerHTML = config.message;
         }
     }
     function setting() {
-        showLog("请设置新的欢迎语:");
+        showLog({ title: "设置", content: "欢迎使用墨枢！<br>在这里你可以自定义欢迎语和Logo的显示与隐藏。" });
     }
 
     function submitLog() {
         let log = document.querySelector('textarea').value;
-        log = fixText(log);
+        log = escapeHtml(log); // 先转义危险字符
+        log = fixText(log); // 再替换换行
         if (log) {
             config.message = log;
             localStorage.setItem('config', JSON.stringify(config));
             document.querySelector('.message h1').innerHTML = log;
             hideLog();
         } else {
-            showLog('请输入内容');
+            showLog({ title: "提示", content: "请输入内容" });
         }
     }
+
     function resetLog() {
         config.message = "如果说<br>书籍是人类进步的阶梯<br>那电纸书就是人类进步的电梯";
         localStorage.setItem('config', JSON.stringify(config));
@@ -204,22 +259,46 @@
     }
 
     function fixText(text) {
-        var replaceRegex = /(\n\r|\r\n|\r|\n)/g;
-
         text = text || '';
-
-        return text.replace(replaceRegex, "<br/>");
+        return text.replace(/\r?\n/g, "<br/>"); // 匹配 \n 或 \r\n，替换为 <br/>
     }
-    function showLog(content) {
+
+    function showLog({ title = "提示", content = "" }) {
         document.querySelector('.mask').style.display = 'block';
         document.querySelector('.log').style.display = 'flex';
         document.querySelector('.log-content').innerHTML = content;
+        document.querySelector('.log-title').innerHTML = title;
+
     }
     function hideLog() {
         document.querySelector('.mask').style.display = 'none';
         document.querySelector('.log').style.display = 'none';
     }
+    function setLogo() {
+        config.logo = !config.logo;
+        localStorage.setItem('config', JSON.stringify(config));
+        if (config.logo) {
+            document.querySelector('.header').style.display = 'flex';
+            document.querySelector('#setLogo').innerHTML = '隐藏Logo';
+        } else {
+            document.querySelector('.header').style.display = 'none';
+            document.querySelector('#setLogo').innerHTML = '显示Logo';
+        }
+    }
 
+    // 转义函数（转义除<br>外的HTML标签）
+    function escapeHtml(unsafe) {
+        return unsafe.replace(/[&<"'>]/g, function (match) {
+            switch (match) {
+                case '&': return '&amp;';
+                case '<': return '&lt;';
+                case '>': return '&gt;';
+                case '"': return '&quot;';
+                case "'": return '&#039;';
+                default: return match;
+            }
+        });
+    }
     init()
 </script>
 
