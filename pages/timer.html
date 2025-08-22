@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kindle计时器|盖kindle面更香</title>
+    <link rel="stylesheet" href="https://fontsapi.zeoseven.com/719/main/result.css" />
+    <style>
+        .content {
+            margin: 80px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+        }
+
+        .clock {
+            font-size: 60px;
+            text-align: center;
+            font-family: "YuFanLixing";
+            font-weight: normal;
+        }
+
+        .timer {
+            width: 300px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 3px solid #000000;
+            padding: 16px;
+        }
+
+        .start-button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #000000;
+            background-color: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <h1>盖kindle，面更香</h1>
+        <div class="timer">
+            <div class="message">剩余时间</div>
+            <div class="clock">00:00</div>
+        </div>
+        <div class="select">
+            <input type="radio" id="1m" name="minute" value="1" checked>
+            <label for="1m">1分钟</label>
+            <input type="radio" id="2m" name="minute" value="2">
+            <label for="2m">2分钟</label>
+            <input type="radio" id="3m" name="minute" value="3">
+            <label for="3m">3分钟</label>
+            <input type="radio" id="4m" name="minute" value="4">
+            <label for="4m">4分钟</label>
+        </div>
+        <button class="start-button">开始泡面</button>
+    </div>
+</body>
+<script>
+    const startButton = document.querySelector('.start-button');
+    const clock = document.querySelector('.clock');
+    let timer;
+
+    startButton.addEventListener('click', () => {
+        const selectedMinute = document.querySelector('input[name="minute"]:checked').value;
+        let timeLeft = selectedMinute * 60;
+
+        clock.textContent = formatTime(timeLeft);
+
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            clock.textContent = formatTime(timeLeft);
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                clock.textContent = '时间到！';
+            }
+        }, 1000);
+    });
+
+    function formatTime(seconds) {
+        // 格式化时间为 MM:SS
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+</script>
+
+</html>
