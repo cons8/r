@@ -70,7 +70,9 @@
     const clock = document.querySelector('.clock');
     let timer;
 
-    startButton.addEventListener('click', () => {
+    startButton.addEventListener('click', countdown);
+
+    function countdown() {
         const selectedMinute = document.querySelector('input[name="minute"]:checked').value;
         let timeLeft = selectedMinute * 60;
 
@@ -86,8 +88,8 @@
                 clock.textContent = '时间到！';
             }
         }, 1000);
-    });
-
+    }
+    
     function addZero(num) {
         return num < 10 ? "0" + num : num;
     }
