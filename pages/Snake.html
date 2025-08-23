@@ -11,7 +11,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #B6C79C;
+            background-color: #ffffff;
             font-family: monospace;
             overflow: hidden; /* 禁用滚动条 */
         }
@@ -30,14 +30,14 @@
 
         .title {
             font-size: 32px;
-            color: #3B3B3B;
+            color: #000000;
             font-weight: bold;
             margin-bottom: 5px;
         }
 
         .score {
             font-size: 16px;
-            color: #3B3B3B;
+            color: #000000;
             line-height: 1.5;
             margin-bottom: 30px;
         }
@@ -46,7 +46,7 @@
             width: 400px;
             height: 400px;
             border: 2px dashed #555555;
-            background-color: #B6C79C;
+            background-color: #ffffff;
             image-rendering: pixelated; /* 像素化渲染 */
             max-width: 100%;
             touch-action: manipulation; /* 优化触摸体验，减少延迟 */
@@ -65,7 +65,7 @@
         <div class="title">贪吃蛇</div>
         <div class="score">得分: <span id="scoreValue">0</span></div>
         <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <div class="controls">点击屏幕开始游戏<br>点击画布控制方向</div>
+        <div class="controls">点击画布上下左右的区域控制方向</div>
     </div>
 
     <script>
@@ -73,17 +73,17 @@
         const GRID_SIZE = 16;
         const CANVAS_SIZE = 400;
         const GRID_COUNT = CANVAS_SIZE / GRID_SIZE;
-        const INITIAL_SPEED = 200; // 初始速度 (毫秒)
+        const INITIAL_SPEED = 400; // 初始速度 (毫秒)
         const MIN_SPEED = 50; // 最小速度 (毫秒)
         const SPEED_INCREMENT = 2; // 每次得分后速度增加量
 
         // 颜色方案
         const COLORS = {
-            background: "#B6C79C",
-            snake: "#202020",
-            food: "green",
-            gridLine: "#DCE7D4",
-            text: "#3B3B3B"
+            background: "white",
+            snake: "black",
+            food: "black",
+            gridLine: "black",
+            text: "black"
         };
 
         // 获取画布和上下文
