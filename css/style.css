@@ -1,0 +1,95 @@
+*{
+    box-sizing: border-box;
+}
+.mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+.log-input{
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid black;
+    border-radius: 4px;
+}
+
+.log textarea {
+    min-height: 80px;
+    width: 100%;
+    padding: 0.5rem;
+    height: fit-content;
+    border: 2px solid black;
+    border-radius: 4px;
+}
+
+.log-header {
+    width: 100%;
+    display: flex;
+    border-bottom: 1px solid black;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.log-body {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid black;
+    width: 100%;
+}
+
+.log-submit-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.log-close {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0.5rem;
+}
+
+.log-submit-container button {
+    margin: 0.5rem;
+}
+
+.log .log-submit {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background-color: white;
+    border: 2px solid black;
+    cursor: pointer;
+    margin: 0.5rem 0;
+}
+
+.log {
+    max-width: 95vw;
+    min-width: 300px;
+    width: auto;
+    position: fixed;
+    top: 50%;
+    /* 顶部距离视口顶部50% */
+    left: 50%;
+    /* 左侧距离视口左侧50% */
+    transform: translate(-50%, -50%);
+    /* 自身向左上偏移50%宽度/高度，实现居中 */
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 2px solid black;
+    display: none;
+    /* 默认隐藏 */
+    flex-direction: column;
+    align-items: center;
+    /* 内部元素水平居中 */
+    z-index: 1000;
+    /* 确保在最上层（可选，避免被其他元素遮挡） */
+    max-height: 60vh;
+}

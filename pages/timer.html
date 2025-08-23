@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kindle计时器|盖kindle面更香</title>
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/719/main/result.css" />
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         .content {
             margin: 80px 0;
@@ -25,6 +26,7 @@
 
         .timer {
             width: 300px;
+            -webkit-border-radius: 8px;
             border-radius: 8px;
             margin-bottom: 20px;
             border: 3px solid #000000;
@@ -47,7 +49,7 @@
 
 <body>
     <div class="content">
-        <h1>盖kindle，面更香</h1>
+        <h1 onclick="changeTitle()">盖kindle，面更香</h1>
         <div class="timer">
             <div class="message">剩余时间</div>
             <div class="clock">00:00</div>
@@ -64,14 +66,39 @@
         </div>
         <button class="start-button">开始泡面</button>
     </div>
+    <div class="mask" onclick="hideLog()"></div>
+    <div class="log">
+        <div class="log-header">
+            <div class="log-title">修改标题</div>
+            <div class="log-close" onclick="hideLog()">x</div>
+        </div>
+        <div class="log-content">请输入内容</div>
+        <div class="log-body">
+            <input type="text" class="log-input" id="logInput" placeholder="请输入标题内容">
+            <div class="log-submit-container">
+                <button class="log-submit" onclick="resetLog()">恢复默认标题</button>
+                <button class="log-submit" onclick="submitLog()">更改标题</button>
+            </div>
+        </div>
+    </div>
 </body>
+<script src="../script/common.js"></script>
 <script>
     const startButton = document.querySelector('.start-button');
     const clock = document.querySelector('.clock');
+    const logInput = document.querySelector('.log-input');
     let timer;
+    let timerConfig = {
+        title: '盖kindle，面更香',
+    };
+    const savedConfig = localStorage.getItem('timerConfig');
+    if (savedConfig) {
+        timerConfig = JSON.parse(savedConfig);
+        document.querySelector('h1').textContent = timerConfig.title;
+    }
+
 
     startButton.addEventListener('click', countdown);
-
     function countdown() {
         const selectedMinute = document.querySelector('input[name="minute"]:checked').value;
         let timeLeft = selectedMinute * 60;
@@ -98,6 +125,25 @@
         const minutes = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return addZero(minutes) + ":" + addZero(secs);
+    }
+
+    function changeTitle() {
+        showLog();
+    }
+    function resetLog() {
+        document.querySelector('h1').textContent = '盖kindle，面更香';
+        timerConfig.title = '盖kindle，面更香';
+        localStorage.setItem('timerConfig', JSON.stringify(timerConfig));
+        hideLog();
+    }
+    function submitLog() {
+        const newTitle = logInput.value.trim();
+        if (newTitle) {
+            document.querySelector('h1').textContent = newTitle;
+            timerConfig.title = newTitle;
+            localStorage.setItem('timerConfig', JSON.stringify(timerConfig));
+        }
+        hideLog();
     }
 </script>
 
