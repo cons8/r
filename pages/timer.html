@@ -8,64 +8,87 @@
     <link rel="stylesheet" href="https://fontsapi.zeoseven.com/719/main/result.css" />
     <link rel="stylesheet" href="../css/style.css">
     <style>
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 容器占满全屏 */
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
         .content {
-            margin: 80px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 60vh;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+
+            width: 480px;
+            height: auto;
+            margin-left: -240px;
+            margin-top: -200px;
+            text-align: center;
         }
 
         .clock {
-            font-size: 60px;
+            font-size: 60pt;
             text-align: center;
             font-family: "YuFanLixing";
             font-weight: normal;
         }
 
         .timer {
-            width: 300px;
-            -webkit-border-radius: 8px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 3px solid #000000;
-            padding: 16px;
+            width: 250pt;
+            -webkit-border-radius: 8pt;
+            border-radius: 8pt;
+            margin-bottom: 20pt;
+            border: 3pt solid #000000;
+            padding: 16pt;
+            margin: 16pt auto;
         }
 
         .start-button {
-            margin-top: 20px;
+            margin-top: 20pt;
             padding: 12px 24px;
             font-size: 18px;
             font-weight: bold;
             color: #000000;
             background-color: #ffffff;
-            border: 2px solid #000000;
-            border-radius: 4px;
+            border: 2pt solid #000000;
+            border-radius: 4pt;
             cursor: pointer;
         }
     </style>
 </head>
 
 <body>
-    <div class="content">
-        <h1 onclick="changeTitle()">盖kindle，面更香</h1>
-        <div class="timer">
-            <div class="message">剩余时间</div>
-            <div class="clock">00:00</div>
+    <div class="container">
+        <div class="content">
+            <h1 id="title" onclick="changeTitle()">盖kindle，面更香</h1>
+            <div class="timer">
+                <div class="message">剩余时间</div>
+                <div id="clock" class="clock">00:00</div>
+            </div>
+            <div class="select">
+                <input type="radio" id="1m" name="minute" value="1" checked>
+                <label for="1m">1分钟</label>
+                <input type="radio" id="2m" name="minute" value="2">
+                <label for="2m">2分钟</label>
+                <input type="radio" id="3m" name="minute" value="3">
+                <label for="3m">3分钟</label>
+                <input type="radio" id="4m" name="minute" value="4">
+                <label for="4m">4分钟</label>
+            </div>
+            <button id="start-button" class="start-button" onclick="countdown()">开始泡面</button>
         </div>
-        <div class="select">
-            <input type="radio" id="1m" name="minute" value="1" checked>
-            <label for="1m">1分钟</label>
-            <input type="radio" id="2m" name="minute" value="2">
-            <label for="2m">2分钟</label>
-            <input type="radio" id="3m" name="minute" value="3">
-            <label for="3m">3分钟</label>
-            <input type="radio" id="4m" name="minute" value="4">
-            <label for="4m">4分钟</label>
-        </div>
-        <button class="start-button">开始泡面</button>
     </div>
+
+
     <div class="mask" onclick="hideLog()"></div>
     <div class="log">
         <div class="log-header">
@@ -84,46 +107,56 @@
 </body>
 <script src="../script/common.js"></script>
 <script>
-    const startButton = document.querySelector('.start-button');
-    const clock = document.querySelector('.clock');
-    const logInput = document.querySelector('.log-input');
-    let timer;
-    let timerConfig = {
+    var startButton = document.getElementById('start-button');
+    var clock = document.getElementById('clock');
+    var logInput = document.getElementById('logInput');
+
+    var timer;
+    var timerConfig = {
         title: '盖kindle，面更香',
     };
-    const savedConfig = localStorage.getItem('timerConfig');
+    var savedConfig = localStorage.getItem('timerConfig');
+
     if (savedConfig) {
         timerConfig = JSON.parse(savedConfig);
-        document.querySelector('h1').textContent = timerConfig.title;
+        document.getElementById('title').innerHTML = timerConfig.title;
+
     }
 
-
-    startButton.addEventListener('click', countdown);
     function countdown() {
-        const selectedMinute = document.querySelector('input[name="minute"]:checked').value;
-        let timeLeft = selectedMinute * 60;
+        // var selectedMinute = document.querySelector('input[name="minute"]:checked').value;
+        var radios = document.getElementsByName('minute');
+        var selectedMinute;
+        for (var i = 0; i < radios.length; i++) {
+            if (radios[i].checked) {
+                selectedMinute = radios[i].value;
+                break;
+            }
+        }
+        var timeLeft = selectedMinute * 60;
 
-        clock.textContent = formatTime(timeLeft);
+        clock.innerHTML = formatTime(timeLeft);
 
         clearInterval(timer);
-        timer = setInterval(() => {
+
+        timer = setInterval(function () {
             timeLeft--;
-            clock.textContent = formatTime(timeLeft);
+            clock.innerHTML = formatTime(timeLeft);
 
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                clock.textContent = '时间到！';
+                clock.innerHTML = '时间到！';
             }
         }, 1000);
     }
-    
+
     function addZero(num) {
         return num < 10 ? "0" + num : num;
     }
     function formatTime(seconds) {
         // 格式化时间为 MM:SS
-        const minutes = Math.floor(seconds / 60);
-        const secs = seconds % 60;
+        var minutes = Math.floor(seconds / 60);
+        var secs = seconds % 60;
         return addZero(minutes) + ":" + addZero(secs);
     }
 
@@ -131,15 +164,15 @@
         showLog();
     }
     function resetLog() {
-        document.querySelector('h1').textContent = '盖kindle，面更香';
+        document.querySelector('h1').innerHTML = '盖kindle，面更香';
         timerConfig.title = '盖kindle，面更香';
         localStorage.setItem('timerConfig', JSON.stringify(timerConfig));
         hideLog();
     }
     function submitLog() {
-        const newTitle = logInput.value.trim();
+        var newTitle = logInput.value.trim();
         if (newTitle) {
-            document.querySelector('h1').textContent = newTitle;
+            document.getElementById('title').innerHTML = newTitle;
             timerConfig.title = newTitle;
             localStorage.setItem('timerConfig', JSON.stringify(timerConfig));
         }
