@@ -164,6 +164,7 @@
     <main class="main">
         <div class="message">
             <h1>...</h1>
+            <p class="tip">请确保在浏览器中启用JavaScript</p>
         </div>
         <div class="app-list">
             <a class="app" href="https://lecepin.github.io/kindle-time/">
@@ -189,7 +190,7 @@
                         </g>
                     </svg>
                 </div>
-                <div class="title"> 盖泡面</div>
+                <div class="title">盖泡面</div>
             </a>
             <a class="app" href="https://r.qq.com">
                 <div class="avater"><svg t="1754554925255" class="icon" viewBox="0 0 1024 1024" version="1.1"
@@ -251,8 +252,9 @@
         message: "如果说<br>书籍是人类进步的阶梯<br>那电纸书就是人类进步的电梯",
         logo: true
     }
-
+    const tip = document.querySelector('.tip');
     function init() {
+        tip.style.display = 'none';
         // 获取用户自定义配置
         let userConfig = localStorage.getItem('config');
         if (userConfig) {
