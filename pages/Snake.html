@@ -37,7 +37,7 @@
 
         .score {
             font-size: 16px;
-            color: #000000;
+            color: #3B3B3B;
             line-height: 1.5;
             margin-bottom: 30px;
         }
@@ -46,7 +46,7 @@
             width: 400px;
             height: 400px;
             border: 2px dashed #555555;
-            background-color: #ffffff;
+            background-color: #B6C79C;
             image-rendering: pixelated; /* 像素化渲染 */
             max-width: 100%;
             touch-action: manipulation; /* 优化触摸体验，减少延迟 */
@@ -65,7 +65,7 @@
         <div class="title">贪吃蛇</div>
         <div class="score">得分: <span id="scoreValue">0</span></div>
         <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <div class="controls">点击画布上下左右的区域控制方向</div>
+        <div class="controls">点击屏幕开始游戏<br>点击画布控制方向</div>
     </div>
 
     <script>
@@ -73,15 +73,15 @@
         const GRID_SIZE = 16;
         const CANVAS_SIZE = 400;
         const GRID_COUNT = CANVAS_SIZE / GRID_SIZE;
-        const INITIAL_SPEED = 400; // 初始速度 (毫秒)
+        const INITIAL_SPEED = 500; // 初始速度 (毫秒)
         const MIN_SPEED = 50; // 最小速度 (毫秒)
-        const SPEED_INCREMENT = 2; // 每次得分后速度增加量
+        const SPEED_INCREMENT = 10; // 每次得分后速度增加量
 
         // 颜色方案
         const COLORS = {
             background: "white",
             snake: "black",
-            food: "black",
+            food: "green",
             gridLine: "black",
             text: "black"
         };
@@ -186,7 +186,7 @@
             ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
         }
 
-        // 绘制开始/暂停提示
+        // 绘制覆盖层提示
         function drawOverlay(text) {
             ctx.fillStyle = 'rgba(182, 199, 156, 0.75)'; // 半透明背景
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -234,14 +234,14 @@
 
             // 碰撞检测：边界
             if (head.x < 0 || head.x >= GRID_COUNT || head.y < 0 || head.y >= GRID_COUNT) {
-                resetGame();
+                endGame();
                 return;
             }
 
             // 碰撞检测：自身
             for (let i = 0; i < snake.length; i++) {
                 if (snake[i].x === head.x && snake[i].y === head.y) {
-                    resetGame();
+                    endGame();
                     return;
                 }
             }
@@ -270,7 +270,22 @@
             draw();
         }
 
-        // 重置游戏
+        // 结束游戏并显示分数
+        function endGame() {
+             clearInterval(gameInterval);
+             gameStarted = false;
+             gamePaused = false;
+             // 显示最终分数
+             drawOverlay(`游戏结束! 得分: ${score}`);
+             // 3秒后显示开始提示
+             setTimeout(() => {
+                 if (!gameStarted) { // 确保在这3秒内没有重新开始
+                     drawOverlay("点击屏幕开始游戏");
+                 }
+             }, 3000);
+         }
+
+        // 重置并开始新游戏
         function resetGame() {
             clearInterval(gameInterval);
             gameStarted = false;
@@ -356,3 +371,6 @@
     </script>
 </body>
 </html>
+
+
+
