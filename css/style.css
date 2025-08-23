@@ -93,3 +93,7 @@
     /* 确保在最上层（可选，避免被其他元素遮挡） */
     max-height: 60vh;
 }
+.log-content {
+    width: 100%;
+    margin-top: 8px;
+}
