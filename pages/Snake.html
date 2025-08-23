@@ -57,6 +57,10 @@
             line-height: 1.5;
             margin-top: 10px;
             text-align: center;
+            color: #3B3B3B;
+        }
+        .controls strong {
+            color: #202020;
         }
     </style>
 </head>
@@ -65,7 +69,9 @@
         <div class="title">贪吃蛇</div>
         <div class="score">得分: <span id="scoreValue">0</span></div>
         <canvas id="gameCanvas" width="400" height="400"></canvas>
-        <div class="controls">点击屏幕开始游戏<br>点击画布控制方向</div>
+        <div class="controls">
+            <p>点击 <strong>画布区域的上/下/左/右区域</strong> 控制蛇的移动方向</p>
+        </div>
     </div>
 
     <script>
@@ -73,9 +79,9 @@
         const GRID_SIZE = 16;
         const CANVAS_SIZE = 400;
         const GRID_COUNT = CANVAS_SIZE / GRID_SIZE;
-        const INITIAL_SPEED = 500; // 初始速度 (毫秒)
+        const INITIAL_SPEED = 200; // 初始速度 (毫秒)
         const MIN_SPEED = 50; // 最小速度 (毫秒)
-        const SPEED_INCREMENT = 10; // 每次得分后速度增加量
+        const SPEED_INCREMENT = 2; // 每次得分后速度增加量
 
         // 颜色方案
         const COLORS = {
@@ -100,6 +106,7 @@
         let gameInterval;
         let gameStarted = false;
         let gamePaused = false;
+        let gameOver = false; // 新增状态：游戏是否结束
 
         // 初始化游戏
         function initGame() {
@@ -120,6 +127,7 @@
             clearCanvas();
             // 绘制初始状态
             draw();
+            gameOver = false; // 重置游戏结束状态
         }
 
         // 生成食物
@@ -188,14 +196,20 @@
 
         // 绘制覆盖层提示
         function drawOverlay(text) {
-            ctx.fillStyle = 'rgba(182, 199, 156, 0.75)'; // 半透明背景
+            ctx.fillStyle = 'rgba(182, 199, 156, 0.85)'; // 半透明背景
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             ctx.font = '20px Arial';
             ctx.fillStyle = COLORS.text;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+            // 支持换行显示
+            const lines = text.split('\n');
+            const lineHeight = 25;
+            const startY = canvas.height / 2 - (lines.length - 1) * lineHeight / 2;
+            lines.forEach((line, i) => {
+                 ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
+            });
         }
 
         // 根据点击位置判断方向
@@ -218,7 +232,7 @@
 
         // 游戏主循环
         function gameLoop() {
-            if (gamePaused || !gameStarted) return;
+            if (gamePaused || !gameStarted || gameOver) return;
 
             // 更新方向
             direction = nextDirection;
@@ -275,47 +289,47 @@
              clearInterval(gameInterval);
              gameStarted = false;
              gamePaused = false;
-             // 显示最终分数
-             drawOverlay(`游戏结束! 得分: ${score}`);
-             // 3秒后显示开始提示
-             setTimeout(() => {
-                 if (!gameStarted) { // 确保在这3秒内没有重新开始
-                     drawOverlay("点击屏幕开始游戏");
-                 }
-             }, 3000);
+             gameOver = true; // 设置游戏结束状态
+             // 显示最终分数和重新开始提示
+             drawOverlay(`游戏结束!\n最终得分: ${score}\n\n点击屏幕重新开始`);
          }
+
+        // 开始游戏
+        function startGame() {
+            if (!gameStarted && !gameOver) { // 只有在未开始且未结束时才能正常开始
+                gameStarted = true;
+                gamePaused = false;
+                clearInterval(gameInterval); // 确保没有遗留的计时器
+                gameInterval = setInterval(gameLoop, gameSpeed);
+            } else if (gameOver) {
+                 // 如果游戏已结束，点击则重置游戏
+                 resetGame();
+                 startGame(); // 立即开始新游戏
+            }
+        }
+
+        // 暂停/继续游戏
+        function togglePause() {
+            if (!gameStarted || gameOver) return; // 游戏未开始或已结束时不能暂停
+
+            gamePaused = !gamePaused;
+            if (gamePaused) {
+                clearInterval(gameInterval);
+                drawOverlay("游戏暂停\n\n点击屏幕继续");
+            } else {
+                gameInterval = setInterval(gameLoop, gameSpeed);
+                draw(); // 清除覆盖层
+            }
+        }
 
         // 重置并开始新游戏
         function resetGame() {
             clearInterval(gameInterval);
             gameStarted = false;
             gamePaused = false;
+            gameOver = false; // 重置游戏结束状态
             initGame();
-            drawOverlay("点击屏幕开始游戏");
-        }
-
-        // 开始游戏
-        function startGame() {
-            if (!gameStarted) {
-                gameStarted = true;
-                gamePaused = false;
-                clearInterval(gameInterval); // 确保没有遗留的计时器
-                gameInterval = setInterval(gameLoop, gameSpeed);
-            }
-        }
-
-        // 暂停/继续游戏
-        function togglePause() {
-            if (!gameStarted) return;
-
-            gamePaused = !gamePaused;
-            if (gamePaused) {
-                clearInterval(gameInterval);
-                drawOverlay("游戏暂停");
-            } else {
-                gameInterval = setInterval(gameLoop, gameSpeed);
-                draw(); // 清除覆盖层
-            }
+            // 不再立即绘制开始提示，因为 handleInput 会处理
         }
 
         // 处理鼠标点击或触摸结束事件
@@ -336,9 +350,13 @@
                 y = e.clientY - rect.top;
             }
 
-            if (!gameStarted) {
-                // 如果游戏未开始，则开始游戏
+            if (!gameStarted && !gameOver) {
+                // 如果游戏未开始且未结束，则开始游戏
                 startGame();
+            } else if (gameOver) {
+                 // 如果游戏已结束，点击则重置并开始新游戏
+                 resetGame();
+                 startGame();
             } else if (gamePaused) {
                 // 如果游戏已暂停，则继续游戏
                 togglePause();
