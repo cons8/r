@@ -75,22 +75,16 @@
     width: auto;
     position: fixed;
     top: 50%;
-    /* 顶部距离视口顶部50% */
     left: 50%;
-    /* 左侧距离视口左侧50% */
     transform: translate(-50%, -50%);
-    /* 自身向左上偏移50%宽度/高度，实现居中 */
     background: white;
     padding: 1rem;
     border-radius: 8px;
     border: 2px solid black;
     display: none;
-    /* 默认隐藏 */
     flex-direction: column;
     align-items: center;
-    /* 内部元素水平居中 */
     z-index: 1000;
-    /* 确保在最上层（可选，避免被其他元素遮挡） */
     max-height: 60vh;
 }
 .log-content {
