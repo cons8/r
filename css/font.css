@@ -1,0 +1,9 @@
+@import url("https://fontsapi.zeoseven.com/22/main/result.css");
+.font-default {
+    font-family: "Arial", "Helvetica", sans-serif;
+    /* font-weight: normal; */
+}
+.font-zhisong {
+    font-family: "LXGW Neo ZhiSong";
+    /* font-weight: normal; */
+}
