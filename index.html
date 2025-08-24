@@ -21,12 +21,10 @@
             /* 防止内容高度变化导致的布局重排 */
         }
         .header {
+            padding: 1rem 0;
             width: 100%;
-            height: 8vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            margin: auto;
+            text-align: center;
         }
 
         .header .title {
@@ -42,13 +40,11 @@
         }
 
         .app {
-            display: flex;
-            flex-direction: column;
             background: white;
             padding: 0.5rem;
             border-radius: 8px;
             text-align: center;
-            border: 1px solid black;
+            border: 2px dashed rgb(133, 133, 133);
             text-decoration: none;
             color: black;
         }
@@ -79,8 +75,8 @@
 
 <body>
     <header class="header">
-        <div class="title">墨枢</div>
-        <!-- <div>Kindle工具集</div> -->
+        <div class="title font-douyinsans">墨枢</div>
+        <div class="font-yufanxinyu">MOSHU</div>
     </header>
     <main class="main">
         <div class="message">
@@ -188,7 +184,7 @@
 </body>
 <script>
     let config = {
-        message: "如果说<br>书籍是人类进步的阶梯<br>那电纸书就是人类进步的电梯",
+        message: "我们是<br>沙沙作响的叶片<br>以这声音回应着暴风雨.",
         logo: true,
         font: "font-default"
     }
@@ -235,7 +231,7 @@
     }
 
     function resetLog() {
-        config.message = "如果说<br>书籍是人类进步的阶梯<br>那电纸书就是人类进步的电梯";
+        config.message = "我们是<br>沙沙作响的叶片<br>以这声音回应着暴风雨.";
         localStorage.setItem('config', JSON.stringify(config));
         document.querySelector('.message h1').innerHTML = config.message;
         hideLog();

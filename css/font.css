@@ -1,4 +1,6 @@
 @import url("https://fontsapi.zeoseven.com/22/main/result.css");
+@import url("https://fontsapi.zeoseven.com/16/main/result.css");
+@import url("https://fontsapi.zeoseven.com/84/main/result.css");
 .font-default {
     font-family: "Arial", "Helvetica", sans-serif;
     /* font-weight: normal; */
@@ -16,5 +18,15 @@
 
 .font-digital {
     font-family: "ZSFT-cb";
+    font-weight: normal;
+}
+
+.font-yufanxinyu {
+    font-family: "YuFanXinYu";
+    /* font-weight: normal; */
+}
+
+.font-douyinsans {
+    font-family: "DouyinSans";
     font-weight: normal;
 }
