@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>墨枢设置</title>
+    <style>
+    </style>
+</head>
+
+<body>
+    <div>
+        <a class="close" href="../index.html">←首页</a>
+        <p>设置</p>
+    </div>
+
+    <!-- 卡片容器 -->
+    <div class="cards-container">
+        <div class="log-content">请输入内容</div>
+        <div class="log-body">
+            <textarea name="" id="" placeholder="请输入欢迎语"></textarea>
+            <div class="log-submit-container">
+                <button class="log-submit" onclick="resetLog()">恢复默认欢迎语</button>
+                <button class="log-submit" onclick="submitLog()">更改欢迎语</button>
+            </div>
+        </div>
+        <div class="log-body">
+            <button id="setLogo" class="log-submit" onclick="setLogo()">隐藏Logo</button>
+        </div>
+        <div class="log-body">
+            <p>设置字体</p>
+            <select id="fontSelect" class="log-submit" onchange="setFont()">
+                <option value="font-default">默认</option>
+                <option value="font-zhisong">霞鹜新致宋</option>
+            </select>
+        </div>
+        <div class="log-body">
+            <a class="log-submit" href="./pages/suggest.html">建议反馈</a>
+        </div>
+    </div>
+</body>
+
+</html>

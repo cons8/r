@@ -1,66 +1,90 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kindle时钟</title>
+    <link rel="stylesheet" href="../css/font.css">
+    <title>墨枢时钟</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+
+        .clock {
+            font-size: 100px;
+            font-family: "ZSFT-cb";
+        }
+
+        td {
+            text-align: center;
+            padding: 0 8px;
+            white-space: nowrap;
             overflow: hidden;
         }
-        #clock {
-            font-size: 20vw;
-            font-weight: bold;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+
+        .today {
+            border: 3px solid #000;
+            border-radius: 8px;
+            -webkit-border-radius: 8px;
         }
-        .hint {
-            position: absolute;
-            bottom: 20px;
-            font-size: 4vw;
-            color: #666;
-            text-align: center;
-            padding: 0 10px;
+
+        .date {
+            font-weight: bold;
+            font-family: "ZSFT-cb";
+            border-top: 3px solid #000;
+        }
+
+        /* 手机端：屏幕宽度 ≤ 480px */
+        @media (max-width: 480px) {
+            .clock {
+                font-size: 80px;
+            }
+
+            td {
+                padding: 0 5px;
+            }
+
+            .date {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
-<body>
-    <div id="clock">00:00:00</div>
-    <div class="hint">在Kindle搜索栏输入"~ds"防止自动锁屏</div>
 
-    <script>
-        function updateClock() {
-            const now = new Date();
-            // 获取时间并确保两位数格式
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            
-            // 组合时间字符串
-            const timeString = `${hours}:${minutes}:${seconds}`;
-            
-            // 更新页面显示
-            document.getElementById('clock').textContent = timeString;
-            
-            // 每秒更新一次
-            setTimeout(updateClock, 1000);
-        }
-        
-        // 页面加载时初始化时钟
-        window.onload = updateClock;
-    </script>
+<body>
+    <table align="center" style="margin: 25vh auto;max-width: 800px;">
+        <tr>
+            <td id="time" class="clock" rowspan="7" colspan="2">00:00</td>
+            <td class="weekday">星期日</td>
+        </tr>
+        <tr>
+            <td class="weekday">星期一</td>
+        </tr>
+        <tr>
+            <td class="weekday">星期二</td>
+        </tr>
+        <tr>
+            <td class="weekday">星期三</td>
+        </tr>
+        <tr>
+            <td class="weekday">星期四</td>
+        </tr>
+        <tr>
+            <td class="weekday">星期五</td>
+        </tr>
+        <tr>
+            <td class="weekday">星期六</td>
+        </tr>
+
+        <tr style="height: 50px;">
+            <td id="solar" class="date">xxxx年/x月/xx日</td>
+            <td id="zodiac" class="date" colspan="2">x</td>
+        </tr>
+    </table>
+    <script src="../script/clock.js"></script>
 </body>
+
 </html>

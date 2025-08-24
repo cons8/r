@@ -7,3 +7,14 @@
     font-family: "LXGW Neo ZhiSong";
     /* font-weight: normal; */
 }
+@font-face {
+    font-family: "ZSFT-cb";
+    src: url("https://fontsapi.zeoseven.com/cb/main.woff2") format("woff2"),
+        url("https://fontsapi-storage.zeoseven.com/cb/main.woff2") format("woff2");
+    font-display: swap;
+}
+
+.font-digital {
+    font-family: "ZSFT-cb";
+    font-weight: normal;
+}
