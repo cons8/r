@@ -14,7 +14,7 @@
         }
 
         .clock {
-            font-size: 100px;
+            font-size: 80px;
             font-family: "ZSFT-cb";
         }
 
@@ -36,11 +36,10 @@
             font-family: "ZSFT-cb";
             border-top: 3px solid #000;
         }
-
         /* 手机端：屏幕宽度 ≤ 480px */
         @media (max-width: 480px) {
             .clock {
-                font-size: 80px;
+                font-size: 48px;
             }
 
             td {
@@ -49,6 +48,20 @@
 
             .date {
                 font-size: 14px;
+            }
+        }
+        /* 平板端：屏幕宽度 481px - 768px */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .clock {
+                font-size: 80px;
+            }
+
+            td {
+                padding: 0 8px;
+            }
+
+            .date {
+                font-size: 16px;
             }
         }
     </style>
