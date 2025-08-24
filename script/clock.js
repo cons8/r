@@ -15,8 +15,6 @@ function updateClock() {
 
     // 星期
     var weekday = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-    var currentWeekday = weekday[now.getDay()];
-
     // 生肖
     var zodiac = ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"];
     var zodiacYear = zodiac[(year - 4) % 12];
@@ -25,7 +23,6 @@ function updateClock() {
     var timeEl = document.getElementById("time");
     var solarEl = document.getElementById("solar");
     var zodiacEl = document.getElementById("zodiac");
-
     // 更新内容
     if (timeEl) { timeEl.innerHTML = timeStr; }
     if (solarEl) { solarEl.innerHTML = solarStr; }
@@ -35,7 +32,7 @@ function updateClock() {
     for (var i = 0; i < weekdayCells.length; i++) {
         weekdayCells[i].classList.remove("today");
     }
-    var todayIndex = now.getDay();
+    var todayIndex = targetTime.getUTCDay();
     if (weekdayCells[todayIndex]) {
         weekdayCells[todayIndex].classList.add("today");
     }
