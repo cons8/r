@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>墨枢反馈</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        .cards-container {
+            text-align: center;
+            height: 300px;
+            line-height: 300px;  
+            white-space: nowrap;
+        }
+
+        .cards-container::before {
+            content: '';
+            display: inline-block;
+            height: 100%;
+            width: 0;
+            vertical-align: middle;
+            margin-left: -0.25em;
+        }
+
+        /* 卡片样式 */
+        .card {
+            display: inline-block;
+            width: 180px;
+            height: 220px;
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            vertical-align: middle;
+            line-height: normal;
+            margin: 0 10px;
+        }
+
+        .card img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 10px;
+            display: block;
+        }
+        .close{
+            text-decoration: none;
+            text-align: center;
+            font-size: larger;
+            color: black;
+            border-radius: 50%;
+            border: 2px solid black;
+            padding: 8px;
+            display: block;
+            width: 20px;
+            height: 20px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h3>功能建议 && 问题反馈</h3>
+
+    <!-- 卡片容器 -->
+    <div class="cards-container">
+        
+        <div class="card">
+            <img src="../static/xiaohongshu.jpg" alt="qrcode">
+            <div class="title">小红书</div>
+            <div>小红书号:950129945</div>
+        </div>
+        <div class="card">
+            <img src="../static/wechat.jpg" alt="qrcode">
+            <div class="title">微信公众号</div>
+            <div>Boat小星球</div>
+        </div>
+
+    </div>
+    <a class="close" href="../index.html">x</a>
+</body>
+</html>
