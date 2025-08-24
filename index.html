@@ -257,12 +257,13 @@
         config.logo = !config.logo;
         localStorage.setItem('config', JSON.stringify(config));
         if (config.logo) {
-            document.querySelector('.header').style.display = 'flex';
+            document.querySelector('.header').style.display = 'block';
             document.querySelector('#setLogo').innerHTML = '隐藏Logo';
         } else {
             document.querySelector('.header').style.display = 'none';
             document.querySelector('#setLogo').innerHTML = '显示Logo';
         }
+        hideLog();
     }
     function setFont() {
         var selectedFont = document.getElementById('fontSelect').value;
