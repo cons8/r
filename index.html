@@ -17,8 +17,9 @@
         }
 
         body {
-            min-height: 100vh;
             /* 防止内容高度变化导致的布局重排 */
+            min-height: 100vh;
+
         }
 
         .header {
@@ -34,24 +35,33 @@
         }
 
         .app-list {
+            width: 100%;
+            font-size: 0;
+            letter-spacing: 0;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
             gap: 1rem;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .app {
             background: white;
-            padding: 0.5rem;
             border-radius: 8px;
             text-align: center;
             border: 2px dashed rgb(133, 133, 133);
             text-decoration: none;
             color: black;
+            display: inline-block;
+            margin: 4pt;
+            padding: 12pt;
         }
 
         .app .avater {
-            margin-bottom: 0.5rem;
+            margin-bottom: 5pt;
+        }
+
+        .app .app-title {
+            font-size: 12pt;
         }
 
         .main {
@@ -87,7 +97,7 @@
         <div class="app-list">
             <a class="app" href="./pages/Clock.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
                         <g fill="none" stroke="#000000" stroke-linecap="round" stroke-width="1.5">
                             <path stroke-linejoin="round" d="M12 8v4l2.5 2.5" />
                             <path
@@ -95,11 +105,11 @@
                         </g>
                     </svg>
                 </div>
-                <div class="title">时钟</div>
+                <div class="app-title">时钟</div>
             </a>
             <a class="app" href="./pages/timer.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
                         <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"
                             stroke-width="1.5">
                             <path
@@ -108,27 +118,17 @@
                         </g>
                     </svg>
                 </div>
-                <div class="title">盖泡面</div>
+                <div class="app-title">盖泡面</div>
             </a>
             <a class="app" href="https://r.qq.com">
-                <div class="avater"><svg t="1755928290747" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                        xmlns="http://www.w3.org/2000/svg" p-id="3807" width="32" height="32">
-                        <path
-                            d="M204.078 0h615.845q202.07 0 202.07 202.07v615.845q0 202.07-202.07 202.07H204.077q-202.07 0-202.07-202.07V202.069Q2.008 0 204.078 0z"
-                            fill="#06679a" p-id="3808" data-spm-anchor-id="a313x.search_index.0.i18.59253a81VFpG5o"
-                            class="selected"></path>
-                        <path
-                            d="M616.087 869.276a106.657 106.657 0 0 0-102.641 77.663 106.657 106.657 0 0 0-102.641-77.663H7.63A202.11 202.11 0 0 0 204.077 1024h615.846a202.11 202.11 0 0 0 196.447-154.724z m255.437-128.14c-44.654 44.172-99.026 54.934-157.816 35.217-19.356-6.506-35.258-8.032-52.204 3.212a73.326 73.326 0 0 1-11.324 3.775c15.46-26.865 4.015-43.65-9.036-62.685-28.993-42.285-23.09-96.738 11.405-136.051 56.22-64.251 166.731-64.251 223.112 0 40.96 46.662 40.076 112.64-4.137 156.531z"
-                            fill="#FFFFFF" p-id="3809"></path>
-                        <path
-                            d="M818.96 611.187a20.078 20.078 0 0 0-20.883 19.276 19.516 19.516 0 0 0 18.473 21.444 20.078 20.078 0 0 0 22.006-18.03 20.68 20.68 0 0 0-19.597-22.69z m-108.906 0a20.078 20.078 0 0 0-20.079 22.207 19.556 19.556 0 0 0 21.404 18.472 20.078 20.078 0 0 0 19.275-20.921 20.922 20.922 0 0 0-20.6-19.758z"
-                            fill="#4496D3" p-id="3810"></path>
-                    </svg></div>
-                <div class="title">微信读书</div>
+                <div class="avater">
+                    <img src="./static/icon_logo_weread.png" alt="" srcset="" style="width:23pt;height:23pt;">
+                </div>
+                <div class="app-title">微信读书</div>
             </a>
             <a class="app" href="./pages/Snake.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 16 16">
                         <g fill="#000000">
                             <path d="M8 3.5a.5.5 0 1 1-1 0a.5.5 0 0 1 1 0" />
                             <path fill-rule="evenodd"
@@ -137,16 +137,16 @@
                         </g>
                     </svg>
                 </div>
-                <div class="title">贪吃蛇</div>
+                <div class="app-title">贪吃蛇</div>
             </a>
             <a class="app" href="./pages/luckygrid.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
                         <path fill="#000000"
                             d="M8.65 22.8q-3.125 0-5.312-2.212T1.15 15.25t2.163-5.288T8.6 7.8h.325L9.6 6.625q.3-.55.9-.712t1.15.162l.75.425l.125-.2q.575-1.075 1.8-1.4t2.3.3l.875.5l-1 1.725l-.875-.5q-.35-.2-.763-.088t-.612.463l-.125.2l1 .575q.525.3.688.9t-.138 1.125L15 11.3q.575.9.863 1.913t.287 2.087q0 3.125-2.187 5.313T8.65 22.8m0-2q2.275 0 3.888-1.612T14.15 15.3q0-.775-.213-1.525T13.3 12.35l-.65-1.025l1.05-1.8l-2.6-1.5l-1.05 1.8h-1.1q-2.35 0-4.087 1.5T3.125 15.25q0 2.3 1.613 3.925T8.65 20.8M20 8.8v-2h3v2zm-5.5-5.5v-3h2v3zm4.875 2.025l-1.4-1.4L20.1 1.8l1.4 1.4zM8.65 15.3" />
                     </svg>
                 </div>
-                <div class="title">幸运方格</div>
+                <div class="app-title">幸运方格</div>
             </a>
             <a class="app" href="javascript:void(0);" onclick="setting()">
                 <div class="avater">
@@ -158,7 +158,7 @@
                         </g>
                     </svg>
                 </div>
-                <div class="title">设置</div>
+                <div class="app-title">设置</div>
             </a>
         </div>
     </main>
