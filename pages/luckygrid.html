@@ -95,7 +95,7 @@
         #board-container {
             overflow: auto; /* 允许滚动 */
             border: 2px solid #000; /* 黑色边框 */
-            background-color: #ddd;
+            background-color: #888;
             /* 初始大小，会被JS覆盖 */
             width: 300px;
             height: 300px;
@@ -119,10 +119,14 @@
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
+            /* 使用与背景相同的深灰色边框 */
+            /* border: 1px solid #888;  */
+
         }
 
         .cell.revealed {
             background-color: #ccc;
+            border: 1px solid #888; /* 保持边框 */
         }
 
         .cell.mine::after {
