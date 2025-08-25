@@ -14,7 +14,7 @@
         }
 
         .clock {
-            font-size: 80px;
+            font-size: 80pt;
             font-family: "ZSFT-cb";
         }
 
@@ -36,70 +36,82 @@
             font-family: "ZSFT-cb";
             border-top: 3px solid #000;
         }
+
         /* 手机端：屏幕宽度 ≤ 480px */
         @media (max-width: 480px) {
             .clock {
-                font-size: 48px;
+                font-size: 48pt;
             }
 
             td {
-                padding: 0 5px;
+                padding: 0 5pt;
             }
 
             .date {
-                font-size: 14px;
+                font-size: 14pt;
             }
         }
-        /* 平板端：屏幕宽度 481px - 768px */
-        @media (min-width: 481px) and (max-width: 768px) {
+
+        /* 平板端：屏幕宽度 481pt - 768pt */
+        @media (min-width: 481pt) and (max-width: 768pt) {
             .clock {
-                font-size: 80px;
+                font-size: 80pt;
             }
 
             td {
-                padding: 0 8px;
+                padding: 0 8pt;
             }
 
             .date {
-                font-size: 16px;
+                font-size: 16pt;
             }
+        }
+
+        .container {
+            text-align: center;
+            position: absolute;
+            top: 14%;
+            width: 100%;
         }
     </style>
 </head>
 
 <body>
-    <table align="center" style="margin: 25vh auto;max-width: 800px;">
-        <tr>
-            <td style="text-align: left;">北京时间</td>
-        </tr>
-        <tr>
-            <td id="time" class="clock" rowspan="7" colspan="2">00:00</td>
-            <td class="weekday">星期日</td>
-        </tr>
-        <tr>
-            <td class="weekday">星期一</td>
-        </tr>
-        <tr>
-            <td class="weekday">星期二</td>
-        </tr>
-        <tr>
-            <td class="weekday">星期三</td>
-        </tr>
-        <tr>
-            <td class="weekday">星期四</td>
-        </tr>
-        <tr>
-            <td class="weekday">星期五</td>
-        </tr>
-        <tr>
-            <td class="weekday">星期六</td>
-        </tr>
+    <div class="container">
+        <table align="center" style="margin: 100pt auto;max-width: 800pt;">
+            <tr>
+                <td style="text-align: left;">北京时间</td>
+            </tr>
+            <tr>
+                <td id="time" class="clock" rowspan="7" colspan="2">00:00</td>
+                <td class="weekday">星期日</td>
+            </tr>
+            <tr>
+                <td class="weekday">星期一</td>
+            </tr>
+            <tr>
+                <td class="weekday">星期二</td>
+            </tr>
+            <tr>
+                <td class="weekday">星期三</td>
+            </tr>
+            <tr>
+                <td class="weekday">星期四</td>
+            </tr>
+            <tr>
+                <td class="weekday">星期五</td>
+            </tr>
+            <tr>
+                <td class="weekday">星期六</td>
+            </tr>
 
-        <tr style="height: 50px;">
-            <td id="solar" class="date">0000年/00月/00日</td>
-            <td id="zodiac" class="date" colspan="2">x</td>
-        </tr>
-    </table>
+            <tr style="height: 50px;">
+                <td id="solar" class="date">0000年/00月/00日</td>
+                <td id="zodiac" class="date" colspan="2">x</td>
+            </tr>
+        </table>
+    </div>
+
     <script src="../script/clock.js"></script>
 </body>
 
