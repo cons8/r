@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>幸运方格</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            touch-action: manipulation; /* 防止双击缩放 */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff; /* 纯白色背景 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px; /* 限制最大宽度 */
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+
+        .info-panel {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap; /* 允许按钮换行 */
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 标记模式按钮的特殊样式 */
+        #flagModeButton.flag-mode-active {
+            background-color: #28a745; /* 绿色表示激活 */
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+
+        /* 地图容器 */
+        .board-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden; /* 隐藏溢出部分 */
+            border: 1px solid #999;
+            border-radius: 5px;
+            /* 为滚动按钮留出空间 */
+            padding: 0 30px; 
+        }
+
+        /* 滚动区域 */
+        #scrollArea {
+            overflow-x: auto; /* 允许水平滚动 */
+            overflow-y: hidden; /* 防止垂直滚动 */
+            padding: 5px 0; /* 给滚动条留点空间 */
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: #888 #f1f1f1; /* Firefox */
+            /* 居中内容 */
+            display: flex;
+            justify-content: center; 
+        }
+
+        /* Webkit 滚动条样式 (Chrome, Safari) */
+        #scrollArea::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        #scrollArea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        #scrollArea::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        #scrollArea::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* 滚动按钮 */
+        .scroll-button {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            /* 移除 transform translateY */
+            /* top/bottom 0 使其占满容器高度 */
+            background-color: rgba(0, 0, 0, 0.3); /* 调整透明度 */
+            color: white;
+            border: none;
+            font-size: 20px;
+            padding: 0 5px; /* 调整内边距 */
+            cursor: pointer;
+            z-index: 10;
+            opacity: 0.7;
+            transition: opacity 0.3s, background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+         .scroll-button:hover {
+            opacity: 1;
+            background-color: rgba(0, 0, 0, 0.5); /* 悬停时加深 */
+        }
+
+        #scrollLeft {
+            left: 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        #scrollRight {
+            right: 0;
+            border-radius: 5px 0 0 5px;
+        }
+
+        #gameBoard {
+            display: grid;
+            gap: 2px;
+            /* grid-template-columns 和 grid-template-rows 将由 JS 动态设置 */
+            background-color: #ccc;
+            border: 2px solid #999;
+            padding: 5px;
+            /* width 由 JS 根据列数动态计算 */
+            /* 移除 margin: 0 auto; 因为父容器会居中 */
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ddd;
+            border: 1px solid #bbb;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            user-select: none; /* 防止文本被选中 */
+        }
+
+        .cell-hidden {
+            background-color: #bbb;
+        }
+
+        .cell-revealed {
+            background-color: #eee;
+        }
+
+        .cell-flagged::before {
+            content: "🚩";
+        }
+
+        .cell-0 { color: transparent; } /* 0 不显示数字 */
+        .cell-1 { color: blue; }
+        .cell-2 { color: green; }
+        .cell-3 { color: red; }
+        .cell-4 { color: purple; }
+        .cell-5 { color: maroon; }
+        .cell-6 { color: turquoise; }
+        .cell-7 { color: black; }
+        .cell-8 { color: gray; }
+        .cell-mine { background-color: red; color: black; }
+
+        .message {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            min-height: 30px;
+            text-align: center;
+        }
+
+        .win { color: green; }
+        .lose { color: red; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <div class="info-panel">时间: <span id="timer">0</span>s</div>
+            <div class="info-panel">剩余雷数: <span id="mineCount">0</span></div>
+        </div>
+
+        <div class="controls">
+            <select id="difficultySelect">
+                <option value="beginner">初级 (9x9, 10雷)</option>
+                <option value="intermediate">中级 (16x16, 40雷)</option>
+                <option value="expert">高级 (16x30, 99雷)</option>
+            </select>
+            <button id="resetButton">新游戏</button>
+            <button id="flagModeButton">🚩标记模式</button>
+        </div>
+
+        <!-- 地图容器 -->
+        <div class="board-container">
+            <button class="scroll-button" id="scrollLeft">&#9664;</button>
+            <div id="scrollArea">
+                <div id="gameBoard"></div>
+            </div>
+            <button class="scroll-button" id="scrollRight">&#9654;</button>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        class Minesweeper {
+            constructor() {
+                this.board = [];
+                this.gameBoardElement = document.getElementById('gameBoard');
+                this.scrollAreaElement = document.getElementById('scrollArea');
+                this.timerElement = document.getElementById('timer');
+                this.mineCountElement = document.getElementById('mineCount');
+                this.messageElement = document.getElementById('message');
+                this.difficultySelect = document.getElementById('difficultySelect');
+                this.resetButton = document.getElementById('resetButton');
+                this.flagModeButton = document.getElementById('flagModeButton');
+                this.scrollLeftButton = document.getElementById('scrollLeft');
+                this.scrollRightButton = document.getElementById('scrollRight');
+
+                this.difficulties = {
+                    beginner: { rows: 9, cols: 9, mines: 10 },
+                    intermediate: { rows: 16, cols: 16, mines: 40 },
+                    expert: { rows: 16, cols: 30, mines: 99 }
+                };
+
+                this.currentDifficulty = 'beginner';
+                this.rows = this.difficulties[this.currentDifficulty].rows;
+                this.cols = this.difficulties[this.currentDifficulty].cols;
+                this.totalMines = this.difficulties[this.currentDifficulty].mines;
+                this.minePositions = [];
+                this.gameOver = false;
+                this.gameWon = false;
+                this.firstClick = true;
+                this.revealedCount = 0;
+                this.flaggedCount = 0;
+                this.isFlagMode = false;
+                this.startTime = null;
+                this.elapsedTime = 0;
+                this.timerInterval = null;
+
+                this.scrollStep = 100; // 每次点击滚动的像素距离
+                this.autoScrollSpeed = 2; // 自动滚动速度 (像素/帧)
+                this.autoScrollInterval = null;
+
+                this.initEventListeners();
+                this.resetGame();
+            }
+
+            initEventListeners() {
+                this.resetButton.addEventListener('click', () => this.resetGame());
+                this.difficultySelect.addEventListener('change', (e) => {
+                    this.currentDifficulty = e.target.value;
+                    this.resetGame();
+                });
+                this.flagModeButton.addEventListener('click', () => {
+                    this.isFlagMode = !this.isFlagMode;
+                    if (this.isFlagMode) {
+                        this.flagModeButton.classList.add('flag-mode-active');
+                        this.flagModeButton.textContent = '👆点击模式';
+                    } else {
+                        this.flagModeButton.classList.remove('flag-mode-active');
+                        this.flagModeButton.textContent = '🚩标记模式';
+                    }
+                });
+
+                // 滚动按钮事件
+                this.scrollLeftButton.addEventListener('mousedown', () => this.startAutoScroll('left'));
+                this.scrollLeftButton.addEventListener('touchstart', (e) => { e.preventDefault(); this.startAutoScroll('left'); });
+                this.scrollLeftButton.addEventListener('mouseup', () => this.stopAutoScroll());
+                this.scrollLeftButton.addEventListener('mouseleave', () => this.stopAutoScroll());
+                this.scrollLeftButton.addEventListener('touchend', () => this.stopAutoScroll());
+
+                this.scrollRightButton.addEventListener('mousedown', () => this.startAutoScroll('right'));
+                this.scrollRightButton.addEventListener('touchstart', (e) => { e.preventDefault(); this.startAutoScroll('right'); });
+                this.scrollRightButton.addEventListener('mouseup', () => this.stopAutoScroll());
+                this.scrollRightButton.addEventListener('mouseleave', () => this.stopAutoScroll());
+                this.scrollRightButton.addEventListener('touchend', () => this.stopAutoScroll());
+
+                // 防止按钮获得焦点
+                this.scrollLeftButton.addEventListener('focus', (e) => e.target.blur());
+                this.scrollRightButton.addEventListener('focus', (e) => e.target.blur());
+            }
+
+            startAutoScroll(direction) {
+                this.stopAutoScroll(); // 确保之前没有滚动
+                const scrollFn = () => {
+                    if (direction === 'left') {
+                        this.scrollAreaElement.scrollBy({ left: -this.autoScrollSpeed, behavior: 'instant' });
+                    } else if (direction === 'right') {
+                        this.scrollAreaElement.scrollBy({ left: this.autoScrollSpeed, behavior: 'instant' });
+                    }
+                };
+                scrollFn(); // 立即执行一次
+                this.autoScrollInterval = setInterval(scrollFn, 10); // 每10ms滚动一次
+            }
+
+            stopAutoScroll() {
+                if (this.autoScrollInterval) {
+                    clearInterval(this.autoScrollInterval);
+                    this.autoScrollInterval = null;
+                }
+            }
+
+            resetGame() {
+                this.rows = this.difficulties[this.currentDifficulty].rows;
+                this.cols = this.difficulties[this.currentDifficulty].cols;
+                this.totalMines = this.difficulties[this.currentDifficulty].mines;
+
+                this.gameOver = false;
+                this.gameWon = false;
+                this.firstClick = true;
+                this.revealedCount = 0;
+                this.flaggedCount = 0;
+                this.minePositions = [];
+                this.board = Array(this.rows).fill().map(() => Array(this.cols).fill(0));
+                
+                this.isFlagMode = false;
+                this.flagModeButton.classList.remove('flag-mode-active');
+                this.flagModeButton.textContent = '🚩标记模式';
+
+                this.stopTimer();
+                this.elapsedTime = 0;
+                this.updateTimer();
+                this.messageElement.textContent = '';
+                this.messageElement.className = 'message';
+
+                // 重置滚动位置
+                this.stopAutoScroll();
+                this.scrollAreaElement.scrollLeft = 0;
+
+                this.gameBoardElement.innerHTML = '';
+                // 动态设置网格和宽度
+                this.gameBoardElement.style.gridTemplateColumns = `repeat(${this.cols}, 1fr)`;
+                this.gameBoardElement.style.gridTemplateRows = `repeat(${this.rows}, 1fr)`;
+                const boardWidth = this.cols * 32 + 10; // 30px cell + 2px gap, 5px padding * 2
+                this.gameBoardElement.style.width = `${boardWidth}px`;
+                this.gameBoardElement.style.minWidth = `${boardWidth}px`; // 确保不会被压缩
+
+                for (let r = 0; r < this.rows; r++) {
+                    for (let c = 0; c < this.cols; c++) {
+                        const cell = document.createElement('div');
+                        cell.classList.add('cell', 'cell-hidden');
+                        cell.dataset.row = r;
+                        cell.dataset.col = c;
+                        
+                        cell.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            if (this.isFlagMode) {
+                                this.toggleFlag(r, c);
+                            } else {
+                                this.handleLeftClick(r, c);
+                            }
+                        });
+
+                        cell.addEventListener('dblclick', () => this.handleDoubleClick(r, c));
+
+                        this.gameBoardElement.appendChild(cell);
+                    }
+                }
+                this.updateMineCount();
+                
+                 // 控制滚动按钮的显示 (逻辑保持不变，但视觉上不再遮挡)
+                 // 按钮始终存在，但通过父容器 padding 和自身定位避免遮挡
+                 // 可以根据需要添加显示/隐藏逻辑，但此处为简化处理
+                 // 这里简单地总是显示按钮，因为 padding 已经预留了空间
+                 // 如果需要完全隐藏非必要按钮，可以添加如下逻辑：
+                 /*
+                 if (this.cols * 32 <= this.scrollAreaElement.clientWidth) {
+                      this.scrollLeftButton.style.display = 'none';
+                      this.scrollRightButton.style.display = 'none';
+                 } else {
+                      this.scrollLeftButton.style.display = 'block';
+                      this.scrollRightButton.style.display = 'block';
+                 }
+                 */
+                 // 为了简化和确保按钮始终可用（即使地图很小），我们不隐藏它们
+                 // 容器的 padding 保证了它们不会覆盖棋盘
+            }
+
+            placeMines(firstClickRow, firstClickCol) {
+                let minesPlaced = 0;
+                while (minesPlaced < this.totalMines) {
+                    const r = Math.floor(Math.random() * this.rows);
+                    const c = Math.floor(Math.random() * this.cols);
+
+                    const isFirstClickArea = Math.abs(r - firstClickRow) <= 1 && Math.abs(c - firstClickCol) <= 1;
+                    
+                    if (this.board[r][c] !== -1 && !isFirstClickArea) {
+                        this.board[r][c] = -1;
+                        this.minePositions.push({r, c});
+                        minesPlaced++;
+
+                        for (let dr = -1; dr <= 1; dr++) {
+                            for (let dc = -1; dc <= 1; dc++) {
+                                const nr = r + dr;
+                                const nc = c + dc;
+                                if (nr >= 0 && nr < this.rows && nc >= 0 && nc < this.cols && this.board[nr][nc] !== -1) {
+                                    this.board[nr][nc]++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            getCellElement(row, col) {
+                return document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+            }
+
+            revealCell(row, col) {
+                if (this.gameOver || this.gameWon) return;
+
+                const cellElement = this.getCellElement(row, col);
+                if (!cellElement || cellElement.classList.contains('cell-revealed') || cellElement.classList.contains('cell-flagged')) {
+                    return;
+                }
+
+                if (this.firstClick) {
+                    this.firstClick = false;
+                    this.placeMines(row, col);
+                    this.startTimer();
+                }
+
+                const cellValue = this.board[row][col];
+
+                cellElement.classList.remove('cell-hidden');
+                cellElement.classList.add('cell-revealed');
+
+                if (cellValue === -1) {
+                    cellElement.classList.add('cell-mine');
+                    cellElement.textContent = '💣';
+                    this.gameOver = true;
+                    this.stopTimer();
+                    this.revealAllMines();
+                    this.messageElement.textContent = '游戏失败!';
+                    this.messageElement.classList.add('lose');
+                    return;
+                }
+
+                this.revealedCount++;
+                cellElement.textContent = cellValue === 0 ? '' : cellValue;
+                cellElement.classList.add(`cell-${cellValue}`);
+
+                if (cellValue === 0) {
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const nr = row + dr;
+                            const nc = col + dc;
+                            if (nr >= 0 && nr < this.rows && nc >= 0 && nc < this.cols) {
+                                this.revealCell(nr, nc);
+                            }
+                        }
+                    }
+                }
+
+                this.checkWin();
+            }
+
+            toggleFlag(row, col) {
+                if (this.gameOver || this.gameWon || this.firstClick) return;
+
+                const cellElement = this.getCellElement(row, col);
+                if (!cellElement || cellElement.classList.contains('cell-revealed')) {
+                    return;
+                }
+
+                if (cellElement.classList.contains('cell-flagged')) {
+                    cellElement.classList.remove('cell-flagged');
+                    this.flaggedCount--;
+                } else {
+                    cellElement.classList.add('cell-flagged');
+                    this.flaggedCount++;
+                }
+                this.updateMineCount();
+            }
+
+            revealAllMines() {
+                this.minePositions.forEach(pos => {
+                    const cellElement = this.getCellElement(pos.r, pos.c);
+                    if (cellElement && !cellElement.classList.contains('cell-flagged')) {
+                        cellElement.classList.remove('cell-hidden');
+                        cellElement.classList.add('cell-revealed', 'cell-mine');
+                        cellElement.textContent = '💣';
+                    }
+                });
+            }
+
+            checkWin() {
+                if (this.revealedCount === (this.rows * this.cols - this.totalMines)) {
+                    this.gameWon = true;
+                    this.stopTimer();
+                    this.messageElement.textContent = '恭喜你，赢了!';
+                    this.messageElement.classList.add('win');
+                    
+                    this.minePositions.forEach(pos => {
+                        const cellElement = this.getCellElement(pos.r, pos.c);
+                        if (cellElement && !cellElement.classList.contains('cell-flagged')) {
+                            cellElement.classList.add('cell-flagged');
+                        }
+                    });
+                    this.flaggedCount = this.totalMines;
+                    this.updateMineCount();
+                }
+            }
+
+            handleLeftClick(row, col) {
+                this.revealCell(row, col);
+            }
+
+             handleDoubleClick(row, col) {
+                if (this.gameOver || this.gameWon || this.firstClick) return;
+                const cellElement = this.getCellElement(row, col);
+                if (!cellElement || !cellElement.classList.contains('cell-revealed')) return;
+
+                const cellValue = this.board[row][col];
+                if (cellValue > 0) {
+                    let flaggedNeighbors = 0;
+                    let neighbors = [];
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            if (dr === 0 && dc === 0) continue;
+                            const nr = row + dr;
+                            const nc = col + dc;
+                            if (nr >= 0 && nr < this.rows && nc >= 0 && nc < this.cols) {
+                                const neighborElement = this.getCellElement(nr, nc);
+                                neighbors.push({r: nr, c: nc});
+                                if (neighborElement.classList.contains('cell-flagged')) {
+                                    flaggedNeighbors++;
+                                }
+                            }
+                        }
+                    }
+
+                    if (flaggedNeighbors === cellValue) {
+                        neighbors.forEach(n => {
+                            if (!this.getCellElement(n.r, n.c).classList.contains('cell-flagged')) {
+                                this.revealCell(n.r, n.c);
+                            }
+                        });
+                    }
+                }
+            }
+
+
+            startTimer() {
+                this.startTime = Date.now() - this.elapsedTime * 1000;
+                this.timerInterval = setInterval(() => {
+                    this.elapsedTime = Math.floor((Date.now() - this.startTime) / 1000);
+                    this.updateTimer();
+                }, 1000);
+            }
+
+            stopTimer() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+            }
+
+            updateTimer() {
+                this.timerElement.textContent = this.elapsedTime;
+            }
+
+            updateMineCount() {
+                this.mineCountElement.textContent = this.totalMines - this.flaggedCount;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            new Minesweeper();
+        });
+    </script>
+</body>
+</html>
