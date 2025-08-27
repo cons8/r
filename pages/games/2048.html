@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
+    <style>
+        body {
+            font-family: "avenir", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffffff;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-template-rows: repeat(4, 60px);
+            gap: 6px;
+            padding: 12px;
+            background-color: #ffffff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #eee;
+            color: #333;
+            font-weight: bold;
+            border-radius: 3px;
+            font-size: 20px;
+        }
+
+        .cell.empty {
+            background-color: #ccc;
+        }
+
+        /* Tile colors */
+        .tile-2 {
+            background-color: #ebeaea;
+        }
+
+        .tile-4 {
+            background-color: #e0e0e0;
+        }
+
+        .tile-8 {
+            background-color: #adadad;
+            color: #f9f6f2;
+        }
+
+        .tile-16 {
+            background-color: #828282;
+            color: #f9f6f2;
+        }
+
+        .tile-32 {
+            background-color: #838383;
+            color: #f9f6f2;
+        }
+
+        .tile-64 {
+            background-color: #6e6e6e;
+            color: #f9f6f2;
+        }
+
+        .tile-128 {
+            background-color: #5f5f5f;
+            color: #f9f6f2;
+            font-size: 18px;
+        }
+
+        .tile-256 {
+            background-color: #343434;
+            color: #f9f6f2;
+            font-size: 18px;
+        }
+
+        .tile-512 {
+            background-color: #3c3c3c;
+            color: #f9f6f2;
+            font-size: 18px;
+        }
+
+        .tile-1024 {
+            background-color: #282828;
+            color: #f9f6f2;
+            font-size: 14px;
+        }
+
+        .tile-2048 {
+            background-color: #000000;
+            color: #f9f6f2;
+            font-size: 14px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            /* justify-content: center; */
+            gap: 3px;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #000000;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 10px;
+            font-family: "avenir", sans-serif;
+            cursor: pointer;
+            border-radius: 3px;
+            margin: 4px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #000000;
+            transform: scale(1.05);
+        }
+
+        #game-over {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: white;
+            z-index: 100;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>2048</h1>
+        <div class="grid" id="grid"></div>
+        <div class="button-container">
+            <div><button id="up">上</button></div>
+            <div> 
+                <button id="left">左</button>
+                <button id="down">下</button>
+                <button id="right">右</button>
+            </div>
+        </div>
+    </div>
+    <div id="game-over">游戏结束!</div>
+
+    <script>
+        // Game state
+        let grid = [];
+        const gridSize = 4;
+
+        // Initialize the game
+        function initGame() {
+            createGrid();
+            addRandomTile();
+            addRandomTile();
+            render();
+        }
+
+        // Create the initial grid structure
+        function createGrid() {
+            grid = Array(gridSize).fill().map(() => Array(gridSize).fill(0));
+        }
+
+        // Add a random tile (2 or 4) to an empty cell
+        function addRandomTile() {
+            const emptyCells = [];
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    if (grid[r][c] === 0) {
+                        emptyCells.push({ r, c });
+                    }
+                }
+            }
+            if (emptyCells.length > 0) {
+                const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                grid[randomCell.r][randomCell.c] = Math.random() < 0.9 ? 2 : 4;
+            }
+        }
+
+        // Render the grid to the HTML
+        function render() {
+            const gridElement = document.getElementById('grid');
+            gridElement.innerHTML = '';
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    const cellValue = grid[r][c];
+                    const cell = document.createElement('div');
+                    cell.className = `cell ${cellValue === 0 ? 'empty' : `tile-${cellValue}`}`;
+                    cell.textContent = cellValue === 0 ? '' : cellValue;
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        // Move tiles in the specified direction
+        function move(direction) {
+            let moved = false;
+            const originalGrid = JSON.parse(JSON.stringify(grid)); // Deep copy for comparison
+
+            if (direction === 'left') {
+                for (let r = 0; r < gridSize; r++) {
+                    let row = grid[r].filter(val => val !== 0);
+                    row = mergeCells(row);
+                    // Pad the row back to 4 elements
+                    while (row.length < gridSize) row.push(0);
+                    grid[r] = row;
+                }
+            } else if (direction === 'right') {
+                for (let r = 0; r < gridSize; r++) {
+                    let row = grid[r].filter(val => val !== 0);
+                    row = mergeCells(row.reverse()).reverse();
+                    // Pad the row back to 4 elements
+                    while (row.length < gridSize) row.unshift(0);
+                    grid[r] = row;
+                }
+            } else if (direction === 'up') {
+                for (let c = 0; c < gridSize; c++) {
+                    let column = [];
+                    for (let r = 0; r < gridSize; r++) {
+                        if (grid[r][c] !== 0) column.push(grid[r][c]);
+                    }
+                    column = mergeCells(column);
+                    // Pad the column back to 4 elements
+                    while (column.length < gridSize) column.push(0);
+                    for (let r = 0; r < gridSize; r++) {
+                        grid[r][c] = column[r];
+                    }
+                }
+            } else if (direction === 'down') {
+                for (let c = 0; c < gridSize; c++) {
+                    let column = [];
+                    for (let r = 0; r < gridSize; r++) {
+                        if (grid[r][c] !== 0) column.push(grid[r][c]);
+                    }
+                    column = mergeCells(column.reverse()).reverse();
+                    // Pad the column back to 4 elements
+                    while (column.length < gridSize) column.unshift(0);
+                    for (let r = 0; r < gridSize; r++) {
+                        grid[r][c] = column[r];
+                    }
+                }
+            }
+
+            // Check if the grid has changed
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    if (originalGrid[r][c] !== grid[r][c]) {
+                        moved = true;
+                        break;
+                    }
+                }
+                if (moved) break;
+            }
+
+            if (moved) {
+                addRandomTile();
+                render();
+                if (checkGameOver()) {
+                    document.getElementById('game-over').style.display = 'flex';
+                }
+            }
+        }
+
+        // Merge adjacent cells with the same value
+        function mergeCells(cells) {
+            for (let i = 0; i < cells.length - 1; i++) {
+                if (cells[i] === cells[i + 1]) {
+                    cells[i] *= 2;
+                    cells.splice(i + 1, 1);
+                }
+            }
+            return cells;
+        }
+
+        // Check if the game is over
+        function checkGameOver() {
+            // Check for empty cells
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    if (grid[r][c] === 0) {
+                        return false;
+                    }
+                }
+            }
+            // Check for possible merges horizontally and vertically
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    const current = grid[r][c];
+                    if (
+                        (c < gridSize - 1 && current === grid[r][c + 1]) ||
+                        (r < gridSize - 1 && current === grid[r + 1][c])
+                    ) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Event listeners for buttons
+        document.getElementById('up').addEventListener('click', () => move('up'));
+        document.getElementById('down').addEventListener('click', () => move('down'));
+        document.getElementById('left').addEventListener('click', () => move('left'));
+        document.getElementById('right').addEventListener('click', () => move('right'));
+
+        // Initialize the game when the page loads
+        window.onload = initGame;
+    </script>
+</body>
+
+</html>
