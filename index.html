@@ -82,14 +82,14 @@
 </head>
 
 <body>
-    <header class="header">
+    <header id="header" class="header">
         <div class="title font-douyinsans">墨枢</div>
         <div class="font-yufanxinyu">MOSHU</div>
     </header>
     <main class="main">
         <div class="message">
-            <h1>...</h1>
-            <p class="tip">请确保在浏览器设置中启用JavaScript</p>
+            <h1 id="welcome-message-title">...</h1>
+            <p id="js-tip" class="tip">请确保在浏览器设置中启用JavaScript</p>
         </div>
         <div class="app-list">
             <a class="app" href="./pages/Clock.html">
@@ -188,15 +188,15 @@
             </a>
         </div>
     </main>
-    <div class="mask" onclick="hideLog()"></div>
-    <div class="log">
+    <div id="mask" class="mask" onclick="hideLog()"></div>
+    <div id="log" class="log">
         <div class="log-header">
-            <div class="log-title">标题</div>
+            <div id="log-title" class="log-title">标题</div>
             <div class="log-close" onclick="hideLog()">x</div>
         </div>
-        <div class="log-content">请输入内容</div>
+        <div id="log-content" class="log-content">请输入内容</div>
         <div class="log-body">
-            <textarea name="" id="" placeholder="请输入欢迎语"></textarea>
+            <textarea name="" id="welcome-message-input" placeholder="请输入欢迎语"></textarea>
             <div class="log-submit-container">
                 <button class="log-submit" onclick="resetLog()">恢复默认欢迎语</button>
                 <button class="log-submit" onclick="submitLog()">更改欢迎语</button>
@@ -218,111 +218,6 @@
     </div>
 
 </body>
-<script>
-    let config = {
-        message: "我们是<br>沙沙作响的叶片<br>以这声音回应着暴风雨.",
-        logo: true,
-        font: "font-default"
-    }
-    const tip = document.querySelector('.tip');
-    var title = document.querySelector('.message h1');
-    function init() {
-        tip.style.display = 'none';
-        // 获取用户自定义配置
-        let userConfig = localStorage.getItem('config');
-        if (userConfig) {
-            try {
-                userConfig = JSON.parse(userConfig);
-                config = { ...config, ...userConfig };
-                title.innerHTML = config.message;
-                title.className = config.font;
-                if (!config.logo) {
-                    document.querySelector('.header').style.display = 'none';
-                    document.querySelector('#setLogo').innerHTML = '显示Logo';
-                }
-            } catch (e) {
-                console.error('配置解析失败:', e);
-            }
-        } else {
-            title.innerHTML = config.message;
-        }
-    }
-    function setting() {
-        showLog({ title: "设置", content: "欢迎使用墨枢！<br>在这里你可以自定义欢迎语和Logo的显示与隐藏。" });
-        document.getElementById('fontSelect').value = config.font;
-    }
-
-    function submitLog() {
-        let log = document.querySelector('textarea').value;
-        log = escapeHtml(log); // 先转义危险字符
-        log = fixText(log); // 再替换换行
-        if (log) {
-            config.message = log;
-            localStorage.setItem('config', JSON.stringify(config));
-            document.querySelector('.message h1').innerHTML = log;
-            hideLog();
-        } else {
-            showLog({ title: "提示" });
-        }
-    }
-
-    function resetLog() {
-        config.message = "我们是<br>沙沙作响的叶片<br>以这声音回应着暴风雨.";
-        localStorage.setItem('config', JSON.stringify(config));
-        document.querySelector('.message h1').innerHTML = config.message;
-        hideLog();
-    }
-
-    function fixText(text) {
-        text = text || '';
-        return text.replace(/\r?\n/g, "<br/>"); // 匹配 \n 或 \r\n，替换为 <br/>
-    }
-
-    function showLog({ title = "提示", content = "欢迎使用墨枢！<br>在这里你可以自定义欢迎语和Logo的显示与隐藏。" }) {
-        document.querySelector('.mask').style.display = 'block';
-        document.querySelector('.log').style.display = 'flex';
-        document.querySelector('.log-content').innerHTML = content;
-        document.querySelector('.log-title').innerHTML = title;
-
-    }
-    function hideLog() {
-        document.querySelector('.mask').style.display = 'none';
-        document.querySelector('.log').style.display = 'none';
-    }
-    function setLogo() {
-        config.logo = !config.logo;
-        localStorage.setItem('config', JSON.stringify(config));
-        if (config.logo) {
-            document.querySelector('.header').style.display = 'block';
-            document.querySelector('#setLogo').innerHTML = '隐藏Logo';
-        } else {
-            document.querySelector('.header').style.display = 'none';
-            document.querySelector('#setLogo').innerHTML = '显示Logo';
-        }
-        hideLog();
-    }
-    function setFont() {
-        var selectedFont = document.getElementById('fontSelect').value;
-        title.className = selectedFont;
-        config.font = selectedFont;
-        localStorage.setItem('config', JSON.stringify(config));
-        hideLog();
-    }
-
-    // 转义函数（转义除<br>外的HTML标签）
-    function escapeHtml(unsafe) {
-        return unsafe.replace(/[&<"'>]/g, function (match) {
-            switch (match) {
-                case '&': return '&amp;';
-                case '<': return '&lt;';
-                case '>': return '&gt;';
-                case '"': return '&quot;';
-                case "'": return '&#039;';
-                default: return match;
-            }
-        });
-    }
-    init()
-</script>
+<script src="./script/index.js"></script>
 
 </html>
