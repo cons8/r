@@ -329,7 +329,7 @@
                 this.startTime = null;
                 this.timerInterval = null;
                 this.flagCount = 0;
-                this.isFlagMode = false; // 新增：标记是否为插旗模式
+                this.isFlagMode = false; // 标记是否为插旗模式
 
                 this.boardWrapper = document.getElementById('board-wrapper');
                 this.boardContainer = document.getElementById('board-container');
@@ -349,10 +349,11 @@
                 this.navRight = document.getElementById('nav-right');
 
                 this.setupEventListeners();
-                this.setupNavigation();
+
                 this.initGame();
+                this.setupNavigation();
             }
-            // 
+
             setupEventListeners() {
                 this.difficultySelector.addEventListener('change', () => this.initGame());
                 this.resetButton.addEventListener('click', () => this.initGame());
@@ -379,6 +380,27 @@
                 this.navRight.addEventListener('click', () => {
                     this.boardContainer.scrollBy({ left: step, behavior: 'smooth' });
                 });
+
+                // 封装导航显示逻辑为函数
+                const updateNavVisibility = () => {
+                    const hasVerticalScroll = this.boardContainer.scrollHeight > this.boardContainer.clientHeight;
+                    this.navUp.style.display = hasVerticalScroll ? 'flex' : 'none';
+                    this.navDown.style.display = hasVerticalScroll ? 'flex' : 'none';
+
+                    const hasHorizontalScroll = this.boardContainer.scrollWidth > this.boardContainer.clientWidth;
+                    this.navLeft.style.display = hasHorizontalScroll ? 'flex' : 'none';
+                    this.navRight.style.display = hasHorizontalScroll ? 'flex' : 'none';
+                };
+
+                // 初始调用一次
+                updateNavVisibility();
+
+                // 监听容器尺寸变化和窗口大小变化
+                this.boardContainer.addEventListener('resize', updateNavVisibility);
+                window.addEventListener('resize', updateNavVisibility);
+
+                // 监听滚动事件（可选，根据需要添加）
+                this.boardContainer.addEventListener('scroll', updateNavVisibility);
             }
 
             initGame() {
@@ -413,6 +435,7 @@
 
                 this.totalCells = this.rows * this.cols;
                 this.mineCountDisplay.textContent = `地雷: ${this.mineCount}`;
+
 
                 this.createBoard();
                 this.placeMines();
@@ -476,7 +499,7 @@
                 this.gameBoard.style.gridTemplateRows = `repeat(${this.rows}, 30px)`;
 
                 // 设置容器大小
-                const containerSize = Math.max(this.cols * 32, this.rows * 32); // 30px cell + 1px gap
+                const containerSize = Math.max(this.cols * 31 + 4, this.rows * 31 + 4); // 30px cell + 1px gap
                 const maxWidth = window.innerWidth - 40; // 为页面边距留出空间
                 const maxHeight = window.innerHeight - 250; // 为header/controls留出空间
                 this.boardContainer.style.width = `${Math.min(containerSize, maxWidth)}px`;
@@ -507,6 +530,7 @@
                         this.gameBoard.appendChild(cellElement);
                     }
                 }
+                this.setupNavigation();
             }
 
             onCellClick(event) {
