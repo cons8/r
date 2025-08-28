@@ -1,6 +1,6 @@
         .log {
-            min-width: 80%;
-            max-width: 97%;
+            min-width: 250pt;
+            max-width: 800pt;
             position: fixed;
             top: 50%;
             left: 50%;
