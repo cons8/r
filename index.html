@@ -83,8 +83,10 @@
         .tab-item {
             display: inline;
             margin: 4pt;
+            cursor: pointer;
         }
-        .selected-item{
+
+        .selected-item {
             border-bottom: 1px solid #000000;
             font-weight: bold;
         }
@@ -213,28 +215,32 @@
         </div>
         <div id="log-content" class="log-content">请输入内容</div>
         <div class="log-body">
-            <textarea name="" id="welcome-message-input" placeholder="请输入欢迎语"></textarea>
-            <div class="log-submit-container">
-                <button class="log-submit" onclick="resetLog()">恢复默认欢迎语</button>
-                <button class="log-submit" onclick="submitLog()">更改欢迎语</button>
+            <div class="log-body-item">
+                <p class="log-body-title">设置欢迎语</p>
+                <textarea name="" id="welcome-message-input" placeholder="请输入欢迎语"></textarea>
+                <div class="log-submit-container">
+                    <button  onclick="resetLog()">恢复默认</button>
+                    <button onclick="submitLog()">更改欢迎语</button>
+                </div>
             </div>
-        </div>
-        <div class="log-body">
-            <button id="setLogo" class="log-submit" onclick="setLogo()">隐藏Logo</button>
-        </div>
-        <div class="log-body">
-            <p>设置字体</p>
-            <select id="fontSelect" class="log-submit" onchange="setFont()">
-                <option value="font-default">默认</option>
-                <option value="font-zhisong">霞鹜新致宋</option>
-            </select>
-        </div>
-        <div class="log-body">
-            <a class="log-submit" href="./pages/suggest.html">建议反馈</a>
+            <div class="log-body-item">
+                <button id="setLogo" class="log-submit" onclick="setLogo()">隐藏Logo</button>
+            </div>
+            <div class="log-body-item">
+                <p class="log-body-title">设置字体</p>
+                <select id="fontSelect" class="log-submit" onchange="setFont()">
+                    <option value="font-default">默认</option>
+                    <option value="font-zhisong">霞鹜新致宋</option>
+                </select>
+            </div>
+            <div class="log-body-item">
+                <a class="log-submit" href="./pages/suggest.html">建议反馈</a>
+            </div>
         </div>
     </div>
 
 </body>
 <script src="./script/index_tabs.js"></script>
 <script src="./script/index.js"></script>
+
 </html>

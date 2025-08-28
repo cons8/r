@@ -1,21 +1,25 @@
         .log {
-            width: fit-content;
-            min-width: 300px;
-            max-width: 95vw;
+            min-width: 80%;
+            max-width: 97%;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 1rem;
             border-radius: 8px;
-            border: 2px solid black;
+            border: 3px solid black;
             display: none;
             flex-direction: column;
-            align-items: center;
             z-index: 1000;
-            max-height: 60vh;
-            overflow-y: scroll;
+            box-sizing: border-box;
+            padding: 32px;
+        }
+        .log-title {
+            font-weight: bold;
+        }
+        .log-body-item{
+            padding: 8px 0;
+            border-bottom: 1px solid rgb(121, 121, 121);
         }
 
         .log textarea {
@@ -30,7 +34,8 @@
         .log-header {
             width: 100%;
             display: flex;
-            border-bottom: 1px solid black;
+            border-bottom: 1px solid rgb(121, 121, 121);
+            margin-bottom: 8px;
             justify-content: space-between;
             align-items: center;
             cursor: pointer;
@@ -38,8 +43,10 @@
 
         .log-body {
             padding: 0.5rem 0;
-            border-bottom: 1px solid black;
             width: 100%;
+        }
+        .log-body-title {
+            margin-bottom: 8px;
         }
 
         .log-submit-container {
@@ -47,17 +54,19 @@
             width: 100%;
             justify-content: space-between;
         }
-
+        .log-submit-container button {
+            width: 45%;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            background-color: white;
+            border: 2px solid black;
+        }
         .log-close {
             cursor: pointer;
             font-weight: bold;
             padding: 0.5rem;
         }
-
-        .log-submit-container button {
-            margin: 0.5rem;
-        }
-
         .log .log-submit {
             width: 100%;
             padding: 0.5rem 1rem;
@@ -65,12 +74,13 @@
             background-color: white;
             border: 2px solid black;
             cursor: pointer;
-            margin: 0.5rem 0;
             display: block;
             text-align: center;
             color: black;
             text-decoration: none;
+            margin: 8px 0;
         }
+
         option {
             padding: 0.5rem;
             border: 1px solid black;
