@@ -86,6 +86,7 @@ function setLogo() {
 function setFont() {
     var selectedFont = document.getElementById('fontSelect').value;
     welcomeMessageTitle.className = selectedFont;
+    
     config.font = selectedFont;
     localStorage.setItem('config', JSON.stringify(config));
     hideLog();

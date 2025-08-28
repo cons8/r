@@ -33,6 +33,7 @@
         }
 
         .app-list {
+            margin-top: 8pt;
             width: 100%;
             font-size: 0;
             letter-spacing: 0;
@@ -78,6 +79,15 @@
             background: rgba(0, 0, 0, 0.8);
             display: none;
         }
+
+        .tab-item {
+            display: inline;
+            margin: 4pt;
+        }
+        .selected-item{
+            border-bottom: 1px solid #000000;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -91,8 +101,14 @@
             <h1 id="welcome-message-title">...</h1>
             <p id="js-tip" class="tip">请确保在浏览器设置中启用JavaScript</p>
         </div>
+        <div id="tabs" class="tabs">
+            <div class="tab-item selected-item" onclick="changeTab('all')">全部</div>
+            <div class="tab-item" onclick="changeTab('tool')">工具</div>
+            <div class="tab-item" onclick="changeTab('game')">游戏</div>
+        </div>
+
         <div class="app-list">
-            <a class="app" href="./pages/Clock.html">
+            <a class="app tool" href="./pages/Clock.html">
                 <div class="avater">
                     <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
                         <g fill="none" stroke="#000000" stroke-linecap="round" stroke-width="1.5">
@@ -104,7 +120,7 @@
                 </div>
                 <div class="app-title">时钟</div>
             </a>
-            <a class="app" href="./pages/timer.html">
+            <a class="app tool" href="./pages/timer.html">
                 <div class="avater">
                     <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
                         <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"
@@ -117,7 +133,7 @@
                 </div>
                 <div class="app-title">盖泡面</div>
             </a>
-            <a class="app" href="https://r.qq.com">
+            <a class="app tool" href="https://r.qq.com">
                 <div class="avater">
                     <svg t="1756262333442" class="icon" viewBox="0 0 1024 1024" version="1.1"
                         xmlns="http://www.w3.org/2000/svg" p-id="4442" width="32" height="32">
@@ -135,7 +151,7 @@
                 </div>
                 <div class="app-title">微信读书</div>
             </a>
-            <a class="app" href="./pages/games/Snake.html">
+            <a class="app game" href="./pages/games/Snake.html">
                 <div class="avater">
                     <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 16 16">
                         <g fill="#000000">
@@ -148,7 +164,7 @@
                 </div>
                 <div class="app-title">贪吃蛇</div>
             </a>
-            <a class="app" href="./pages/games/luckygrid.html">
+            <a class="app game" href="./pages/games/luckygrid.html">
                 <div class="avater">
                     <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
                         <path fill="#000000"
@@ -157,7 +173,7 @@
                 </div>
                 <div class="app-title">幸运方格</div>
             </a>
-            <a class="app" href="./pages/games/2048.html">
+            <a class="app game" href="./pages/games/2048.html">
                 <div class="avater">
                     <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 48 48">
                         <rect width="18.5" height="18.5" x="24" y="5.5" fill="none" stroke="#000000"
@@ -174,7 +190,7 @@
                 </div>
                 <div class="app-title">2048</div>
             </a>
-            <a class="app" href="javascript:void(0);" onclick="setting()">
+            <a class="app tool" href="javascript:void(0);" onclick="setting()">
                 <div class="avater">
                     <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
                         <g fill="none" stroke="#000000" stroke-width="1.5">
@@ -187,6 +203,7 @@
                 <div class="app-title">设置</div>
             </a>
         </div>
+
     </main>
     <div id="mask" class="mask" onclick="hideLog()"></div>
     <div id="log" class="log">
@@ -218,6 +235,6 @@
     </div>
 
 </body>
+<script src="./script/index_tabs.js"></script>
 <script src="./script/index.js"></script>
-
 </html>
