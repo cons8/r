@@ -156,21 +156,21 @@
     var timerDisplay = document.getElementById('timer');
     var timerLabel = document.getElementById('timer-label');
     var phaseIndicator = document.getElementById('phase-indicator');
-    var timerStatus = false;
-    var timer;
-    var remainingTime;
+    var timerStatus = false; // 计时器状态
+    var timer; // 定时器
+    var remainingTime; // 剩余时间
     var isBreakTime = false; // 是否处于休息状态
 
     // 时间配置
-    const WORK_TIME = 25 * 60; // 25分钟工作
-    const BREAK_TIME = 5 * 60; // 5分钟休息
+    var WORK_TIME = 25 * 60; // 25分钟工作
+    var BREAK_TIME = 5 * 60; // 5分钟休息
     // 本地存储键名（统一用一个键存储所有数据）
-    const STORAGE_KEY = 'tomatoClockData';
+    var STORAGE_KEY = 'tomatoClockData';
 
     // 初始化函数：从本地存储读取完整对象，或创建默认对象
     function init() {
         // 读取本地存储的完整数据（JSON字符串转对象）
-        const storedData = window.localStorage.getItem(STORAGE_KEY);
+        var storedData = window.localStorage.getItem(STORAGE_KEY);
 
         // 若有存储数据则解析，无则创建默认数据对象
         tomatoesStorage = storedData
