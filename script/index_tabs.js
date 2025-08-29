@@ -3,11 +3,14 @@ var tabs = document.getElementById("tabs");
 var tabItems = tabs.getElementsByClassName("tab-item");
 var tools = document.getElementsByClassName("tool");
 var games = document.getElementsByClassName("game");
-function init(){
+function init() {
     var config = window.localStorage.getItem("config");
-    config = JSON.parse(config);
-    // 加载字体
-    tabs.className = "tabs " + config.font;
+    if (config != null) {
+        config = JSON.parse(config);
+        // 加载字体
+        tabs.className = "tabs " + config.font;
+    }
+
 }
 
 function changeTab(tab) {

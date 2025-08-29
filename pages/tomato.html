@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日番茄</title>
+    <style>
+        .container {
+            text-align: center;
+            margin-top: 50px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+        }
+
+        .timer {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .tomato-icon {
+            cursor: pointer;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+
+        .tomato-icon:hover {
+            transform: scale(1.05);
+        }
+
+        .status-label {
+            font-size: 24px;
+            margin: 10px 0;
+            height: 30px;
+        }
+
+        .timer-label {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .tomato-count,
+        .today-tomato {
+            display: inline-block;
+            font-size: 20px;
+            margin: 8px;
+        }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        .btn {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .btn-skip {
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px solid #000000;
+        }
+
+        .btn-skip:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .btn-reset {
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #ffffff;
+        }
+
+        .btn-reset:hover {
+            background-color: #171717;
+            border: 1px solid #ffffff;
+            color: #ffffff;
+        }
+
+        .phase-indicator {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .phase-work {
+            background-color: #ffffff;
+            border: 1px solid #000000;
+            color: #000000;
+        }
+
+        .phase-break {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        .tips {
+            font-size: 14px;
+            color: #888888;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 onclick="toHome()">今日番茄</h1>
+        <div class="tomato-counts">
+            <div id="total-tomatoes" class="tomato-count">番茄总数: 0</div>
+            <div id="today-tomatoes" class="today-tomato">今日番茄: 0</div>
+        </div>
+
+        <div id="phase-indicator" class="phase-indicator phase-work">专注阶段</div>
+        <div class="tomato-icon" onclick="toggleTimer()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60pt" height="60pt" viewBox="0 0 48 48">
+                <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
+                    <path
+                        d="M24 44c11.046 0 20-7.387 20-16.5c0-6.442-4.475-11.799-11-14.516L29.5 14.5L30 20l-6.5-2l-6.5 2v-5.5l-3-1.516C8.022 15.837 4 21.393 4 27.5C4 36.613 12.954 44 24 44" />
+                    <path
+                        d="m23.5 4l3.809 5.117L36 9.91l-6.337 4.573L31.5 21l-8-3l-8 3l1.837-6.517L11 9.91l8.691-.793z" />
+                </g>
+            </svg>
+        </div>
+        <div id="timer" class="timer">25:00</div>
+        <div id="status-label" class="status-label"></div>
+        <p id="timer-label" class="timer-label">点击番茄图标开始计时</p>
+        <div class="controls">
+            <button class="btn btn-skip" onclick="skipPhase()">跳过当前阶段</button>
+            <button class="btn btn-reset" onclick="resetTimer()">重新计时</button>
+        </div>
+        <div>
+            <p class="tips">Tips：清除浏览器数据将导致所有番茄钟数据丢失</p>
+        </div>
+    </div>
+</body>
+<script>
+    var tomatoesStorage; // 统一存储所有番茄钟数据的对象
+    var todayTomatoes = document.getElementById('today-tomatoes');
+    var totalTomatoes = document.getElementById('total-tomatoes');
+    var statusLabel = document.getElementById('status-label');
+    var timerDisplay = document.getElementById('timer');
+    var timerLabel = document.getElementById('timer-label');
+    var phaseIndicator = document.getElementById('phase-indicator');
+    var timerStatus = false;
+    var timer;
+    var remainingTime;
+    var isBreakTime = false; // 是否处于休息状态
+
+    // 时间配置
+    const WORK_TIME = 25 * 60; // 25分钟工作
+    const BREAK_TIME = 5 * 60; // 5分钟休息
+    // 本地存储键名（统一用一个键存储所有数据）
+    const STORAGE_KEY = 'tomatoClockData';
+
+    // 初始化函数：从本地存储读取完整对象，或创建默认对象
+    function init() {
+        // 读取本地存储的完整数据（JSON字符串转对象）
+        const storedData = window.localStorage.getItem(STORAGE_KEY);
+
+        // 若有存储数据则解析，无则创建默认数据对象
+        tomatoesStorage = storedData
+            ? JSON.parse(storedData)
+            : {
+                total: 0,        // 番茄总数
+                today: 0,        // 今日番茄数
+                date: new Date().toLocaleDateString() // 当前日期
+            };
+
+        // 更新页面显示
+        totalTomatoes.innerText = `番茄总数: ${tomatoesStorage.total}`;
+        todayTomatoes.innerText = `今日番茄: ${tomatoesStorage.today}`;
+
+        // 初始化剩余时间为工作时间
+        remainingTime = WORK_TIME;
+        updateTimerDisplay();
+
+        // 日期不一致时重置今日番茄（修改后同步到统一存储）
+        if (tomatoesStorage.date !== new Date().toLocaleDateString()) {
+            resetTodayTomatoes();
+            updateDate();
+        }
+    }
+
+    // 重置今日番茄数（修改后同步到统一存储）
+    function resetTodayTomatoes() {
+        tomatoesStorage.today = 0;
+        todayTomatoes.innerText = `今日番茄: ${tomatoesStorage.today}`;
+        // 同步更新到本地存储（整个对象序列化）
+        saveToStorage();
+    }
+
+    // 更新番茄计数（修改后同步到统一存储）
+    function updateTomatoes() {
+        tomatoesStorage.total += 1;
+        tomatoesStorage.today += 1;
+        // 更新页面显示
+        todayTomatoes.innerText = `今日番茄: ${tomatoesStorage.today}`;
+        totalTomatoes.innerText = `番茄总数: ${tomatoesStorage.total}`;
+        // 同步更新到本地存储
+        saveToStorage();
+    }
+
+    // 更新日期（修改后同步到统一存储）
+    function updateDate() {
+        tomatoesStorage.date = new Date().toLocaleDateString();
+        // 同步更新到本地存储
+        saveToStorage();
+    }
+
+    // 统一存储函数：将完整数据对象序列化为JSON存入本地存储
+    function saveToStorage() {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tomatoesStorage));
+    }
+
+    // 切换计时器状态（开始/暂停）
+    function toggleTimer() {
+        if (!timerStatus) {
+            startTimer();
+        } else {
+            pauseTimer();
+        }
+    }
+
+    // 开始计时器
+    function startTimer() {
+        timerStatus = true;
+        if (isBreakTime) {
+            statusLabel.innerText = "休息中...";
+            timerLabel.innerText = "点击番茄图标暂停休息";
+        } else {
+            statusLabel.innerText = "专注中...";
+            timerLabel.innerText = "点击番茄图标暂停计时";
+        }
+
+        timer = setInterval(function () {
+            if (remainingTime <= 0) {
+                clearInterval(timer);
+                timerStatus = false;
+
+                if (isBreakTime) {
+                    completeBreakPhase();
+                } else {
+                    completeWorkPhase();
+                }
+                return;
+            }
+            remainingTime--;
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    // 暂停计时器
+    function pauseTimer() {
+        timerStatus = false;
+        if (isBreakTime) {
+            statusLabel.innerText = "休息已暂停";
+            timerLabel.innerText = "点击番茄图标继续休息";
+        } else {
+            statusLabel.innerText = "已暂停";
+            timerLabel.innerText = "点击番茄图标继续计时";
+        }
+        clearInterval(timer);
+    }
+
+    // 完成工作阶段，切换到休息阶段
+    function completeWorkPhase() {
+        statusLabel.innerText = "专注完成！开始休息吧";
+        timerLabel.innerText = "点击番茄开始休息";
+        updateTomatoes(); // 增加番茄计数（自动同步存储）
+
+        // 切换到休息阶段
+        isBreakTime = true;
+        remainingTime = BREAK_TIME;
+        updateTimerDisplay();
+        updatePhaseIndicator();
+
+        // 自动开始休息计时
+        setTimeout(startTimer, 1000);
+    }
+
+    // 完成休息阶段，切换到工作阶段
+    function completeBreakPhase() {
+        statusLabel.innerText = "休息结束！准备开始新的专注";
+        timerLabel.innerText = "点击番茄开始专注";
+
+        // 切换到工作阶段
+        isBreakTime = false;
+        remainingTime = WORK_TIME;
+        updateTimerDisplay();
+        updatePhaseIndicator();
+
+        // 自动开始工作计时
+        setTimeout(startTimer, 1000);
+    }
+
+    // 跳过当前阶段
+    function skipPhase() {
+        // 停止当前计时器
+        if (timerStatus) {
+            clearInterval(timer);
+            timerStatus = false;
+        }
+
+        if (isBreakTime) {
+            // 跳过休息，直接开始专注
+            statusLabel.innerText = "已跳过休息，准备专注";
+            isBreakTime = false;
+            remainingTime = WORK_TIME;
+        } else {
+            // 跳过工作，直接开始休息
+            statusLabel.innerText = "已跳过专注，准备休息";
+            isBreakTime = true;
+            remainingTime = BREAK_TIME;
+            updateTomatoes(); // 即使跳过工作，也计为完成一个番茄（自动同步存储）
+        }
+
+        updateTimerDisplay();
+        updatePhaseIndicator();
+        timerLabel.innerText = "点击番茄开始计时";
+    }
+
+    // 重置计时器
+    function resetTimer() {
+        // 停止计时器
+        if (timerStatus) {
+            clearInterval(timer);
+            timerStatus = false;
+        }
+
+        // 重置为专注状态
+        isBreakTime = false;
+        remainingTime = WORK_TIME;
+        updateTimerDisplay();
+        updatePhaseIndicator();
+        statusLabel.innerText = "";
+        timerLabel.innerText = "点击番茄开始计时";
+    }
+
+    // 更新计时器显示
+    function updateTimerDisplay() {
+        var minutes = Math.floor(remainingTime / 60);
+        var seconds = remainingTime % 60;
+        timerDisplay.innerText = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+    }
+
+    // 更新阶段指示器
+    function updatePhaseIndicator() {
+        if (isBreakTime) {
+            phaseIndicator.className = "phase-indicator phase-break";
+            phaseIndicator.innerText = "休息阶段";
+        } else {
+            phaseIndicator.className = "phase-indicator phase-work";
+            phaseIndicator.innerText = "专注阶段";
+        }
+    }
+    function toHome(){
+        window.location.href = "../index.html";
+    }
+    // 页面加载时初始化
+    window.onload = init;
+</script>
+
+</html>

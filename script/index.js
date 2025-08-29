@@ -105,4 +105,4 @@ function escapeHtml(unsafe) {
         }
     });
 }
-init()
+window.onload = init;
