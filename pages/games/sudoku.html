@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数独</title>
     <style>
+        /* 保持原有样式不变 */
         * {
             margin: 0;
             padding: 0;
@@ -23,13 +24,15 @@
             margin: 0 auto;
             background: white;
         }
-        .header{
+
+        .header {
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 8px;
             border-bottom: 1px solid #696969;
         }
+
         .title {
             display: block;
             color: black;
@@ -37,12 +40,14 @@
             font-size: 20px;
             font-weight: bold;
         }
-        .about-icon{
+
+        .about-icon {
             display: inline-block;
             top: -22px;
             left: 55%;
             cursor: pointer;
         }
+
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -359,7 +364,15 @@
     <div class="container">
         <div class="header">
             <p class="title">数独</p>
-            <div class="about-icon" onclick="openAboutModal()"><svg xmlns="http://www.w3.org/2000/svg" width="12pt" height="12pt" viewBox="0 0 24 24"><g fill="none"><circle cx="12" cy="12" r="10" stroke="#000000" stroke-width="1.5" opacity=".5"/><path stroke="#000000" stroke-linecap="round" stroke-width="1.5" d="M10.125 8.875a1.875 1.875 0 1 1 2.828 1.615c-.475.281-.953.708-.953 1.26V13"/><circle cx="12" cy="16" r="1" fill="#000000"/></g></svg></div>
+            <div class="about-icon" onclick="openAboutModal()"><svg xmlns="http://www.w3.org/2000/svg" width="12pt"
+                    height="12pt" viewBox="0 0 24 24">
+                    <g fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="#000000" stroke-width="1.5" opacity=".5" />
+                        <path stroke="#000000" stroke-linecap="round" stroke-width="1.5"
+                            d="M10.125 8.875a1.875 1.875 0 1 1 2.828 1.615c-.475.281-.953.708-.953 1.26V13" />
+                        <circle cx="12" cy="16" r="1" fill="#000000" />
+                    </g>
+                </svg></div>
         </div>
         <div class="controls">
             <select id="difficultySelect">
@@ -369,8 +382,8 @@
             </select>
             <button onclick="generateSelectedPuzzle()">生成题目</button>
             <button onclick="solvePuzzle()">求解</button>
-            <button onclick="clearBoard()">清空</button>
-            <!-- <button onclick="openCustomModal()">自定义</button> -->
+            <button onclick="clearBoard()">清空棋盘</button>
+            <button onclick="clearUserInput()">重玩</button>
         </div>
 
 
@@ -404,7 +417,7 @@
     </div>
 
     <!-- 自定义棋谱弹窗 -->
-    <div id="customModal" class="modal">
+    <!-- <div id="customModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeCustomModal()">×</span>
             <div class="modal-header">自定义数独棋谱</div>
@@ -425,22 +438,37 @@
                 <button onclick="loadCustomPuzzle()">加载</button>
             </div>
         </div>
-    </div>
+    </div> -->
+
+    <!-- 关于弹窗 -->
     <div id="aboutModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeAboutModal()">×</span>
             <div class="modal-header">游戏说明</div>
-            <div class="info-panel">
-                <p>点击空白格子，然后点击下方数字填入</p>
-                <p>每行、每列、每个3×3宫格内数字1-9各出现一次</p>
-                <p>灰色数字为题目给定，不可修改</p>
-                <p>深色背景表示冲突的数字</p>
-            </div>
+            <p>点击空白格子，然后点击下方数字填入</p>
+            <p>每行、每列、每个3×3宫格内数字1-9各出现一次</p>
+            <p>灰色数字为题目给定，不可修改</p>
+            <p>深色背景表示冲突的数字</p>
+            <a href="../../index.html">点我回到首页</a>
             <div class="modal-buttons">
                 <button onclick="closeAboutModal()">关闭</button>
             </div>
         </div>
     </div>
+
+    <!-- 清空确认弹窗 -->
+    <div id="confirmClearModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeConfirmClearModal()">×</span>
+            <div class="modal-header">确认清空</div>
+            <p>确定要清空所有内容，回到初始状态吗？</p>
+            <div class="modal-buttons">
+                <button onclick="closeConfirmClearModal()">取消</button>
+                <button onclick="confirmClearBoard()">确认</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let board = [];
         let solution = [];
@@ -522,7 +550,7 @@
             renderBoard();
         }
 
-        // 检查冲突
+        // 检查单个单元格冲突
         function hasConflict(row, col) {
             const num = board[row][col];
             if (!num) return false;
@@ -547,6 +575,33 @@
             }
 
             return false;
+        }
+
+        // 检查整个棋盘是否有冲突
+        function hasAnyConflict() {
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    if (board[row][col] && hasConflict(row, col)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // 清除用户填入的数字（保留初始给定的数字）
+        function clearUserInput() {
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    if (!givenCells[row][col]) {
+                        board[row][col] = 0;
+                    }
+                }
+            }
+            selectedCell = null;
+            selectedNumber = null;
+            renderBoard();
+            updateStatus('已清除用户填入的数字');
         }
 
         // 检查是否完成
@@ -610,15 +665,23 @@
                 return true;
             }
 
-            function solve(board) {
+            function shuffle(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function fillBoard(board) {
                 for (let row = 0; row < 9; row++) {
                     for (let col = 0; col < 9; col++) {
                         if (board[row][col] === 0) {
-                            const shuffled = [...nums].sort(() => Math.random() - 0.5);
+                            const shuffled = shuffle([...nums]);
                             for (const num of shuffled) {
                                 if (isValid(board, row, col, num)) {
                                     board[row][col] = num;
-                                    if (solve(board)) {
+                                    if (fillBoard(board)) {
                                         return true;
                                     }
                                     board[row][col] = 0;
@@ -631,125 +694,54 @@
                 return true;
             }
 
-            solve(newBoard);
+            fillBoard(newBoard);
             return newBoard;
         }
 
-        // 生成题目
+        // 根据难度生成题目
         function generatePuzzle(difficulty) {
-            solution = generateSolution();
-            board = solution.map(row => [...row]);
-            givenCells = Array(9).fill().map(() => Array(9).fill(true));
+            const solution = generateSolution();
+            const puzzle = JSON.parse(JSON.stringify(solution));
+            const givenCount = difficulty === 'easy' ? 36 : difficulty === 'medium' ? 30 : 24;
 
-            // 根据难度移除数字
-            let cellsToRemove;
-            switch (difficulty) {
-                case 'easy': cellsToRemove = 35; break;
-                case 'medium': cellsToRemove = 45; break;
-                case 'hard': cellsToRemove = 55; break;
-            }
-
-            const cells = [];
-            for (let row = 0; row < 9; row++) {
-                for (let col = 0; col < 9; col++) {
-                    cells.push({ row, col });
+            // 随机挖空
+            let emptyCount = 81 - givenCount;
+            while (emptyCount > 0) {
+                const row = Math.floor(Math.random() * 9);
+                const col = Math.floor(Math.random() * 9);
+                if (puzzle[row][col] !== 0) {
+                    puzzle[row][col] = 0;
+                    emptyCount--;
                 }
             }
 
-            // 随机选择要移除的格子
-            for (let i = 0; i < cellsToRemove; i++) {
-                const randomIndex = Math.floor(Math.random() * cells.length);
-                const { row, col } = cells.splice(randomIndex, 1)[0];
-                board[row][col] = 0;
-                givenCells[row][col] = false;
-            }
+            return { puzzle, solution };
+        }
 
+        // 生成选中难度的题目
+        function generateSelectedPuzzle() {
+            const difficulty = document.getElementById('difficultySelect').value;
+            const { puzzle, solution: sol } = generatePuzzle(difficulty);
+            board = puzzle;
+            solution = sol;
+            givenCells = board.map(row => row.map(cell => cell !== 0));
             selectedCell = null;
             selectedNumber = null;
             renderBoard();
             updateStatus(`已生成${difficulty === 'easy' ? '简单' : difficulty === 'medium' ? '中等' : '困难'}难度题目`);
         }
 
-        // 根据下拉框选择生成题目
-        function generateSelectedPuzzle() {
-            const difficulty = document.getElementById('difficultySelect').value;
-            generatePuzzle(difficulty);
-        }
-
-        // 打开自定义弹窗
-        function openCustomModal() {
-            document.getElementById('customModal').style.display = 'block';
-        }
-
-        // 关闭自定义弹窗
-        function closeCustomModal() {
-            document.getElementById('customModal').style.display = 'none';
-        }
-
-        // 打开关于弹窗
-        function openAboutModal() {
-            document.getElementById('aboutModal').style.display = 'block';
-        }
-
-        // 关闭关于弹窗
-        function closeAboutModal() {
-            document.getElementById('aboutModal').style.display = 'none';
-        }
-
-        // 加载自定义题目
-        function loadCustomPuzzle() {
-            const input = document.getElementById('customInput').value.trim();
-            if (!input) {
-                updateStatus('请输入自定义数独数据');
-                return;
-            }
-
-            const numbers = input.split(',').map(n => parseInt(n.trim()));
-            if (numbers.length !== 81) {
-                updateStatus('需要输入81个数字（包括0）');
-                return;
-            }
-
-            if (numbers.some(n => isNaN(n) || n < 0 || n > 9)) {
-                updateStatus('数字必须在0-9范围内');
-                return;
-            }
-
-            board = [];
-            givenCells = [];
-
-            for (let i = 0; i < 81; i++) {
-                const row = Math.floor(i / 9);
-                const col = i % 9;
-
-                if (row === 0) {
-                    board.push([]);
-                    givenCells.push([]);
-                }
-
-                board[row][col] = numbers[i];
-                givenCells[row][col] = numbers[i] !== 0;
-            }
-
-            selectedCell = null;
-            selectedNumber = null;
-            closeCustomModal();
-            renderBoard();
-            updateStatus('已加载自定义题目');
-        }
-
-        // 清空棋盘
-        function clearBoard() {
-            board = Array(9).fill().map(() => Array(9).fill(0));
-            givenCells = Array(9).fill().map(() => Array(9).fill(false));
-            selectedCell = null;
-            selectedNumber = null;
-            renderBoard();
-            updateStatus('棋盘已清空');
-        }
-
-        // 求解当前题目
+        // 求解数独
         function solvePuzzle() {
+            if (hasAnyConflict()) {
+                if (confirm('当前填入的数字存在冲突，是否清除所有用户填入的数字后重新求解？')) {
+                    clearUserInput();
+                } else {
+                    updateStatus('当前填入的数字存在冲突，请修正后再求解');
+                    return;
+                }
+            }
+
             function isValid(board, row, col, num) {
                 for (let c = 0; c < 9; c++) {
                     if (board[row][c] === num) return false;
@@ -795,15 +787,73 @@
             }
         }
 
-        // 点击弹窗外部关闭弹窗
-        window.onclick = function (event) {
-            const modal = document.getElementById('customModal');
-            if (event.target === modal) {
-                closeCustomModal();
-            }
+        // 清空棋盘功能 - 打开确认模态框
+        function clearBoard() {
+            openConfirmClearModal();
         }
 
-        // 初始化
+        // 确认清空棋盘
+        function confirmClearBoard() {
+            // 完全重置所有游戏数据
+            board = Array(9).fill().map(() => Array(9).fill(0));
+            solution = [];
+            givenCells = Array(9).fill().map(() => Array(9).fill(false));
+            selectedCell = null;
+            selectedNumber = null;
+            renderBoard();
+            updateStatus('已清空棋盘，请选择难度开始游戏');
+            closeConfirmClearModal();
+        }
+
+        // 自定义棋盘相关函数
+        function openCustomModal() {
+            document.getElementById('customModal').style.display = 'block';
+        }
+
+        function closeCustomModal() {
+            document.getElementById('customModal').style.display = 'none';
+        }
+
+        function loadCustomPuzzle() {
+            const input = document.getElementById('customInput').value;
+            const numbers = input.split(',').map(Number);
+
+            if (numbers.length !== 81 || numbers.some(n => isNaN(n) || n < 0 || n > 9)) {
+                alert('请输入有效的81个数字（0-9），用逗号分隔');
+                return;
+            }
+
+            const puzzle = [];
+            for (let i = 0; i < 9; i++) {
+                puzzle.push(numbers.slice(i * 9, (i + 1) * 9));
+            }
+
+            board = puzzle;
+            givenCells = board.map(row => row.map(cell => cell !== 0));
+            closeCustomModal();
+            renderBoard();
+            updateStatus('已加载自定义题目');
+        }
+
+        // 关于弹窗
+        function openAboutModal() {
+            document.getElementById('aboutModal').style.display = 'block';
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').style.display = 'none';
+        }
+
+        // 清空确认弹窗相关函数
+        function openConfirmClearModal() {
+            document.getElementById('confirmClearModal').style.display = 'block';
+        }
+
+        function closeConfirmClearModal() {
+            document.getElementById('confirmClearModal').style.display = 'none';
+        }
+
+        // 初始化游戏
         initBoard();
     </script>
 </body>
