@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2048</title>
+    <link rel="stylesheet" href="../../css/custom.css">
     <style>
         body {
             font-family: "avenir", sans-serif;
@@ -158,11 +159,11 @@
 
 <body>
     <div class="container">
-        <h1>2048</h1>
+        <h1 onclick="openAboutModal()">2048</h1>
         <div class="grid" id="grid"></div>
         <div class="button-container">
             <div><button id="up">上</button></div>
-            <div> 
+            <div>
                 <button id="left">左</button>
                 <button id="down">下</button>
                 <button id="right">右</button>
@@ -170,7 +171,18 @@
         </div>
     </div>
     <div id="game-over">游戏结束!</div>
-
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAboutModal()">×</span>
+            <div class="modal-header">游戏说明</div>
+            <!-- 2048游戏规则 -->
+            <p>移动方块合并相同数字，目标是合并到2048。</p>
+            <a href="../../index.html">点我回到首页</a>
+            <div class="modal-buttons">
+                <button onclick="closeAboutModal()">关闭</button>
+            </div>
+        </div>
+    </div>
     <script>
         // Game state
         let grid = [];
@@ -323,6 +335,14 @@
                 }
             }
             return true;
+        }
+
+        function openAboutModal() {
+            document.getElementById('aboutModal').style.display = 'block';
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').style.display = 'none';
         }
 
         // Event listeners for buttons
