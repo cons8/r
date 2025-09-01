@@ -33,15 +33,11 @@
         }
 
         .app-list {
-            margin-top: 8pt;
-            width: 100%;
-            font-size: 0;
-            letter-spacing: 0;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            align-items: flex-start;
+            grid-template-columns: repeat(auto-fill, minmax(70pt, 1fr));
+            gap: 4pt;
+            margin-top: 8pt;
         }
-
         .app {
             background: white;
             border-radius: 8px;
@@ -51,7 +47,9 @@
             color: black;
             display: inline-block;
             margin: 4pt;
-            padding: 6pt 0;
+            padding: 6pt;
+            width: 70pt;
+            height: 60pt;
         }
 
         .app .avater {
@@ -82,6 +80,7 @@
 
         .tab-item {
             display: inline;
+            color: #333333;
             margin: 4pt;
             cursor: pointer;
         }
@@ -104,15 +103,16 @@
             <p id="js-tip" class="tip">请确保在浏览器设置中启用JavaScript</p>
         </div>
         <div id="tabs" class="tabs">
-            <div class="tab-item selected-item" onclick="changeTab('all')">全部</div>
+            <div class="tab-item selected-item" onclick="changeTab('all')">推荐</div>
             <div class="tab-item" onclick="changeTab('tool')">工具</div>
             <div class="tab-item" onclick="changeTab('game')">游戏</div>
+            <div class="tab-item" onclick="changeTab('webside')">网站</div>
         </div>
 
         <div class="app-list">
             <a class="app tool" href="./pages/Clock.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
                         <g fill="none" stroke="#000000" stroke-linecap="round" stroke-width="1.5">
                             <path stroke-linejoin="round" d="M12 8v4l2.5 2.5" />
                             <path
@@ -124,7 +124,7 @@
             </a>
             <a class="app tool" href="./pages/timer.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
                         <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"
                             stroke-width="1.5">
                             <path
@@ -137,7 +137,7 @@
             </a>
             <a class="app tool" href="./pages/tomato.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 48 48">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 48 48">
                         <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">
                             <path
                                 d="M24 44c11.046 0 20-7.387 20-16.5c0-6.442-4.475-11.799-11-14.516L29.5 14.5L30 20l-6.5-2l-6.5 2v-5.5l-3-1.516C8.022 15.837 4 21.393 4 27.5C4 36.613 12.954 44 24 44" />
@@ -148,10 +148,10 @@
                 </div>
                 <div class="app-title">今日番茄</div>
             </a>
-            <a class="app tool" href="https://r.qq.com">
+            <a class="app webside" href="https://r.qq.com">
                 <div class="avater">
                     <svg t="1756262333442" class="icon" viewBox="0 0 1024 1024" version="1.1"
-                        xmlns="http://www.w3.org/2000/svg" p-id="4442" width="32" height="32">
+                        xmlns="http://www.w3.org/2000/svg" p-id="4442" width="20pt" height="20pt">
                         <path
                             d="M204.078 0h615.845q202.07 0 202.07 202.07v615.845q0 202.07-202.07 202.07H204.077q-202.07 0-202.07-202.07V202.069Q2.008 0 204.078 0z"
                             fill="#000000" p-id="4443" data-spm-anchor-id="a313x.search_index.0.i6.3e633a81fPjPWa"
@@ -168,7 +168,7 @@
             </a>
             <a class="app game" href="./pages/games/luckygrid.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
                         <path fill="#000000"
                             d="M8.65 22.8q-3.125 0-5.312-2.212T1.15 15.25t2.163-5.288T8.6 7.8h.325L9.6 6.625q.3-.55.9-.712t1.15.162l.75.425l.125-.2q.575-1.075 1.8-1.4t2.3.3l.875.5l-1 1.725l-.875-.5q-.35-.2-.763-.088t-.612.463l-.125.2l1 .575q.525.3.688.9t-.138 1.125L15 11.3q.575.9.863 1.913t.287 2.087q0 3.125-2.187 5.313T8.65 22.8m0-2q2.275 0 3.888-1.612T14.15 15.3q0-.775-.213-1.525T13.3 12.35l-.65-1.025l1.05-1.8l-2.6-1.5l-1.05 1.8h-1.1q-2.35 0-4.087 1.5T3.125 15.25q0 2.3 1.613 3.925T8.65 20.8M20 8.8v-2h3v2zm-5.5-5.5v-3h2v3zm4.875 2.025l-1.4-1.4L20.1 1.8l1.4 1.4zM8.65 15.3" />
                     </svg>
@@ -177,7 +177,7 @@
             </a>
             <a class="app game" href="./pages/games/2048.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 48 48">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 48 48">
                         <rect width="18.5" height="18.5" x="24" y="5.5" fill="none" stroke="#000000"
                             stroke-linejoin="round" stroke-width="2" rx="4" />
                         <rect width="18.5" height="18.5" x="5.5" y="24" fill="none" stroke="#000000"
@@ -194,7 +194,7 @@
             </a>
             <a class="app game" href="./pages/games/Snake.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 16 16">
                         <g fill="#000000">
                             <path d="M8 3.5a.5.5 0 1 1-1 0a.5.5 0 0 1 1 0" />
                             <path fill-rule="evenodd"
@@ -207,7 +207,7 @@
             </a>
             <a class="app game" href="./pages/games/sudoku.html">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
                         <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"
                             stroke-width="1.5">
                             <path
@@ -221,7 +221,7 @@
             </a>
             <a class="app tool" href="javascript:void(0);" onclick="setting()">
                 <div class="avater">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="23pt" height="23pt" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
                         <g fill="none" stroke="#000000" stroke-width="1.5">
                             <circle cx="12" cy="12" r="3" />
                             <path
