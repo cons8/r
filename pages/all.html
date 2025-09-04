@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全部应用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            padding: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+            /* 让body在大屏幕上居中，避免过宽 */
+        }
+
+        .header {
+            font-size: 18px;
+            padding: 8px 0;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-bottom: 1px solid #000000;
+        }
+
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+            margin: 0 auto;
+        }
+
+        .app-item {
+            border: 5px solid #000000;
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            position: relative;
+            color: black;
+        }
+
+        .app-icon {
+            width: 60px;
+            position: absolute;
+            top: 50%;
+            right: 25px;
+            transform: translateY(-50%);
+        }
+
+        .app-name {
+            font-size: 20px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 30px;
+            transform: translateY(-50%);
+        }
+
+        .goback {
+            text-decoration: none;
+            color: black;
+        }
+
+        .goback svg,
+        .header-title {
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a class="goback" href="../index.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
+                <path fill="#000000" d="m7.825 13l5.6 5.6L12 20l-8-8l8-8l1.425 1.4l-5.6 5.6H20v2z" />
+            </svg>
+            <div class="header-title">主页</div>
+        </a>
+    </div>
+    <div class="app-list">
+        <a class="app-item" href="./games/luckygrid.html">
+            <div class="app-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60pt" height="65pt" viewBox="0 0 24 24">
+                    <path fill="#000000"
+                        d="M8.65 22.8q-3.125 0-5.312-2.212T1.15 15.25t2.163-5.288T8.6 7.8h.325L9.6 6.625q.3-.55.9-.712t1.15.162l.75.425l.125-.2q.575-1.075 1.8-1.4t2.3.3l.875.5l-1 1.725l-.875-.5q-.35-.2-.763-.088t-.612.463l-.125.2l1 .575q.525.3.688.9t-.138 1.125L15 11.3q.575.9.863 1.913t.287 2.087q0 3.125-2.187 5.313T8.65 22.8m0-2q2.275 0 3.888-1.612T14.15 15.3q0-.775-.213-1.525T13.3 12.35l-.65-1.025l1.05-1.8l-2.6-1.5l-1.05 1.8h-1.1q-2.35 0-4.087 1.5T3.125 15.25q0 2.3 1.613 3.925T8.65 20.8M20 8.8v-2h3v2zm-5.5-5.5v-3h2v3zm4.875 2.025l-1.4-1.4L20.1 1.8l1.4 1.4zM8.65 15.3" />
+                </svg>
+            </div>
+            <div class="app-name">幸运方格</div>
+        </a>
+        <a class="app-item" href="./games/2048.html">
+            <div class="app-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60pt" height="60pt" viewBox="0 0 48 48">
+                    <rect width="18.5" height="18.5" x="24" y="5.5" fill="none" stroke="#000000" stroke-linejoin="round"
+                        stroke-width="2" rx="4" />
+                    <rect width="18.5" height="18.5" x="5.5" y="24" fill="none" stroke="#000000" stroke-linejoin="round"
+                        stroke-width="2" rx="4" />
+                    <rect width="18.5" height="18.5" x="24" y="24" fill="none" stroke="#000000" stroke-linejoin="round"
+                        stroke-width="2" rx="4" />
+                    <rect width="18.5" height="18.5" x="5.5" y="5.5" fill="none" stroke="#000000"
+                        stroke-linejoin="round" stroke-width="2" rx="4" />
+                    <path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"
+                        d="m16.805 38.25l-.001-10l-5.366 6.717h6.625m11.875-18.529a3.313 3.313 0 0 0 6.625 0v-3.375a3.313 3.313 0 0 0-6.626 0Zm-18.5-3.375a3.313 3.313 0 0 1 6.624 0a3.1 3.1 0 0 1-.97 2.342c-1.34 1.176-5.654 4.345-5.654 4.345h6.625m14.375 13.5a2.5 2.5 0 0 0-2.5 2.5h0a2.5 2.5 0 0 0 2.5 2.5h1.624a2.5 2.5 0 0 0 2.5-2.5h0a2.5 2.5 0 0 0-2.5-2.5m.001 0a2.5 2.5 0 0 0 2.5-2.5h0a2.5 2.5 0 0 0-2.5-2.5h-1.626a2.5 2.5 0 0 0-2.5 2.5h0a2.5 2.5 0 0 0 2.5 2.5m.001 0h1.625" />
+                </svg>
+            </div>
+            <div class="app-name">2048</div>
+        </a>
+        <a class="app-item" href="./games/2048.html">
+            <div class="app-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60pt" height="60pt" viewBox="0 0 16 16">
+                    <g fill="#000000">
+                        <path d="M8 3.5a.5.5 0 1 1-1 0a.5.5 0 0 1 1 0" />
+                        <path fill-rule="evenodd"
+                            d="M5.5 1a2.5 2.5 0 0 0-2.086 3.879L2.293 6H.5v1H2v1.5h1V6.707l1.121-1.121c.396.262.87.414 1.379.414H7v2H6a2 2 0 0 0-2 2a2 2 0 1 0 0 4h9a2 2 0 1 0 0-4a2 2 0 0 0-2-2V4.5A3.5 3.5 0 0 0 7.5 1zM4 3.5A1.5 1.5 0 0 1 5.5 2h2A2.5 2.5 0 0 1 10 4.5v4l.5.5h.5a1 1 0 0 1 1 1v1h1a1 1 0 1 1 0 2H4a1 1 0 1 1 0-2h1v-1a1 1 0 0 1 1-1h1.5l.5-.5v-3L7.5 5h-2A1.5 1.5 0 0 1 4 3.5"
+                            clip-rule="evenodd" />
+                    </g>
+                </svg>
+            </div>
+            <div class="app-name">2048</div>
+        </a>
+        <a class="app-item" href="./games/sudoku.html">
+            <div class="app-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60pt" height="60pt" viewBox="0 0 24 24">
+                    <g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                        <path
+                            d="M2.75.75h18.5s2 0 2 2v18.5s0 2-2 2H2.75s-2 0-2-2V2.75s0-2 2-2M.75 12h22.5M12 .75v22.5" />
+                        <path
+                            d="m4.707 4.996l2.308-1.153v5m8.291-5h4.444l-3.333 5m-1.111 6.375v2.946h4.285m0-2.946v5" />
+                    </g>
+                </svg>
+            </div>
+            <div class="app-name">数独</div>
+        </a>
+    </div>
+</body>
+
+</html>
