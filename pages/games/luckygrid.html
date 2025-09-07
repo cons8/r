@@ -137,8 +137,6 @@
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
-            /* 使用与背景相同的深灰色边框 */
-            /* border: 1px solid #888;  */
 
         }
 
@@ -221,6 +219,7 @@
             justify-content: center;
             align-items: center;
             z-index: 10;
+            pointer-events: none; /* 允许点击穿透容器 */
         }
 
         .nav-btn-container.horizontal {
@@ -269,6 +268,7 @@
             color: #000;
             /* 文字黑色 */
             cursor: pointer;
+            pointer-events: auto; /* 恢复按钮的点击能力 */
         }
     </style>
 </head>
@@ -330,6 +330,7 @@
                 this.timerInterval = null;
                 this.flagCount = 0;
                 this.isFlagMode = false; // 标记是否为插旗模式
+                this.scrollPosition = { x: 0, y: 0 }; // 保存滚动位置
 
                 this.boardWrapper = document.getElementById('board-wrapper');
                 this.boardContainer = document.getElementById('board-container');
@@ -363,6 +364,12 @@
                     this.isFlagMode = !this.isFlagMode;
                     this.modeToggle.textContent = `插旗模式: ${this.isFlagMode ? '开' : '关'}`;
                     this.modeToggle.style.backgroundColor = this.isFlagMode ? '#a0d6a0' : '#e7e7e7'; // 简单的视觉反馈
+                });
+
+                // 监听滚动事件，保存滚动位置
+                this.boardContainer.addEventListener('scroll', () => {
+                    this.scrollPosition.x = this.boardContainer.scrollLeft;
+                    this.scrollPosition.y = this.boardContainer.scrollTop;
                 });
             }
 
@@ -493,6 +500,10 @@
             }
 
             render() {
+                // 保存当前滚动位置
+                const currentScrollX = this.boardContainer.scrollLeft;
+                const currentScrollY = this.boardContainer.scrollTop;
+                
                 this.gameBoard.innerHTML = '';
                 // 设置网格
                 this.gameBoard.style.gridTemplateColumns = `repeat(${this.cols}, 30px)`;
@@ -530,6 +541,11 @@
                         this.gameBoard.appendChild(cellElement);
                     }
                 }
+                
+                // 恢复滚动位置
+                this.boardContainer.scrollLeft = currentScrollX;
+                this.boardContainer.scrollTop = currentScrollY;
+                
                 this.setupNavigation();
             }
 
