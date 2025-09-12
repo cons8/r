@@ -50,16 +50,15 @@
         }
 
         .controls button {
-            padding: 6px 8px;
+            padding: 8px 12px;
+            border: 1px solid #333;
             background: white;
-            border: 1px solid #000000;
-            color: #000;
-            margin: 0 8px;
-            cursor: pointer;
-            font-size: 14px;
-            min-width: 60px;
-            max-width: 90px;
             border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 80px;
         }
 
         .controls select {
@@ -128,7 +127,7 @@
         }
 
         .sudoku-cell.given {
-            background: #e0e0e0;
+            background: #f0f0f0;
             color: #000;
         }
 
@@ -236,7 +235,24 @@
             line-height: 1;
         }
 
+        .hidden {
+            display: none;
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
         /* 移动设备适配 */
+        @media (max-width: 600px) {
+            .header {
+                font-size: 20px;
+                padding: 10px;
+            }
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 10px;
@@ -327,9 +343,9 @@
         </div>
 
 
-        <div class="status" id="status">选择难度开始游戏</div>
-        <div class="game-board">
-            <div class="sudoku-board" id="board"></div>
+        <div class="status" id="status">选择难度后开始游戏</div>
+        <div id="game-board" class="game-board">
+            <div class="sudoku-board " id="board"></div>
             <div class="mode-toggle">
                 <button class="mode-btn active" data-mode="number">数字</button>
                 <button class="mode-btn" data-mode="notes">标记</button>
@@ -453,7 +469,6 @@
                 }
                 boardElement.appendChild(rowElement);
             }
-
             updateStatus();
         }
 
