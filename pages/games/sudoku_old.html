@@ -27,11 +27,10 @@
         }
 
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #696969;
+            padding: 4px 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
         }
 
         .title {
@@ -62,7 +61,7 @@
             font-size: 14px;
             min-width: 60px;
             max-width: 90px;
-            border-radius: 8px;
+            border-radius: 4px;
         }
 
         .controls select {
@@ -71,7 +70,7 @@
             color: #000;
             font-family: inherit;
             font-size: 14px;
-            border-radius: 8px;
+            border-radius: 4px;
             border: 1px solid #666;
         }
 
@@ -103,7 +102,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
         }
 
         .sudoku-board {
@@ -126,6 +124,8 @@
             font-weight: bold;
             cursor: pointer;
             background: white;
+            flex-wrap: wrap;
+            padding: 2px;
         }
 
         .sudoku-cell.given {
@@ -205,6 +205,36 @@
             margin-bottom: 5px;
         }
 
+        .mode-toggle {
+            margin: 4px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: 1px solid #666;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: #000000;
+            color: white;
+        }
+
+        /* 笔记样式 */
+        .note {
+            display: inline-block;
+            width: 33%;
+            text-align: center;
+            font-size: 10px;
+            line-height: 1;
+        }
 
         /* 移动设备适配 */
         @media (max-width: 480px) {
@@ -272,16 +302,17 @@
 <body>
     <div class="container">
         <div class="header">
-            <p class="title">数独</p>
-            <div class="about-icon" onclick="openAboutModal()"><svg xmlns="http://www.w3.org/2000/svg" width="12pt"
-                    height="12pt" viewBox="0 0 24 24">
+            <span class="logo">数独</span>
+            <div style="display: inline;" class="about-icon" onclick="openAboutModal()"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="12pt" height="12pt" viewBox="0 0 24 24">
                     <g fill="none">
                         <circle cx="12" cy="12" r="10" stroke="#000000" stroke-width="1.5" opacity=".5" />
                         <path stroke="#000000" stroke-linecap="round" stroke-width="1.5"
                             d="M10.125 8.875a1.875 1.875 0 1 1 2.828 1.615c-.475.281-.953.708-.953 1.26V13" />
                         <circle cx="12" cy="16" r="1" fill="#000000" />
                     </g>
-                </svg></div>
+                </svg>
+            </div>
         </div>
         <div class="controls">
             <select id="difficultySelect">
@@ -300,6 +331,10 @@
 
         <div class="game-board">
             <div class="sudoku-board" id="board"></div>
+            <div class="mode-toggle">
+                <button class="mode-btn active" data-mode="number">数字</button>
+                <button class="mode-btn" data-mode="notes">标记</button>
+            </div>
             <div class="number-pad">
                 <div class="number-btn" onclick="selectNumber(1)">1</div>
                 <div class="number-btn" onclick="selectNumber(2)">2</div>
@@ -334,6 +369,7 @@
             <p>每行、每列、每个3×3宫格内数字1-9各出现一次</p>
             <p>灰色数字为题目给定，不可修改</p>
             <p>深色背景表示冲突的数字</p>
+            <p>标记模式可以添加多个可能的数字作为笔记</p>
             <a href="../../index.html">点我回到首页</a>
             <div class="modal-buttons">
                 <button onclick="closeAboutModal()">关闭</button>
@@ -360,11 +396,14 @@
         let givenCells = [];
         let selectedCell = null;
         let selectedNumber = null;
+        let inputMode = 'number'; // 'number' or 'notes'
+        let notes = Array(9).fill().map(() => Array(9).fill([])); // 存储每个单元格的笔记
 
         // 初始化游戏板
         function initBoard() {
             board = Array(9).fill().map(() => Array(9).fill(0));
             givenCells = Array(9).fill().map(() => Array(9).fill(false));
+            notes = Array(9).fill().map(() => Array(9).fill([])); // 初始化笔记
             renderBoard();
         }
 
@@ -380,7 +419,17 @@
                 for (let col = 0; col < 9; col++) {
                     const cellElement = document.createElement('div');
                     cellElement.className = 'sudoku-cell';
-                    cellElement.textContent = board[row][col] || '';
+                    
+                    // 显示数字或笔记
+                    if (inputMode === 'notes' && notes[row][col].length > 0) {
+                        // 笔记模式 - 显示小型笔记数字
+                        cellElement.innerHTML = notes[row][col].map(n => 
+                            `<span class="note">${n}</span>`
+                        ).join('');
+                    } else {
+                        // 数字模式 - 显示正常数字
+                        cellElement.textContent = board[row][col] || '';
+                    }
 
                     if (givenCells[row][col]) {
                         cellElement.classList.add('given');
@@ -390,13 +439,13 @@
                         cellElement.classList.add('selected');
                     }
 
-                    // 检查冲突
-                    if (board[row][col] && hasConflict(row, col)) {
+                    // 检查冲突（只在数字模式下检查）
+                    if (inputMode === 'number' && board[row][col] && hasConflict(row, col)) {
                         cellElement.classList.add('error');
                     }
 
-                    // 高亮相同数字
-                    if (selectedNumber && board[row][col] === selectedNumber) {
+                    // 高亮相同数字（只在数字模式下）
+                    if (inputMode === 'number' && selectedNumber && board[row][col] === selectedNumber) {
                         cellElement.classList.add('same-number');
                     }
 
@@ -430,7 +479,32 @@
                 return;
             }
 
-            board[selectedCell.row][selectedCell.col] = num;
+            const { row, col } = selectedCell;
+            
+            if (inputMode === 'number') {
+                // 数字模式 - 直接设置数字并清空笔记
+                board[row][col] = num;
+                notes[row][col] = [];
+            } else {
+                // 标记模式 - 管理笔记数字
+                if (num === 0) {
+                    // 清除所有笔记
+                    notes[row][col] = [];
+                    // 同时清除数字
+                    board[row][col] = 0;
+                } else {
+                    // 切换笔记中的数字（存在则移除，不存在则添加）
+                    const noteIndex = notes[row][col].indexOf(num);
+                    if (noteIndex > -1) {
+                        notes[row][col].splice(noteIndex, 1);
+                    } else {
+                        notes[row][col] = [...notes[row][col], num].sort((a, b) => a - b);
+                    }
+                    // 清除数字模式下的数值
+                    board[row][col] = 0;
+                }
+            }
+            
             selectedNumber = num;
             renderBoard();
         }
@@ -474,19 +548,20 @@
             return false;
         }
 
-        // 清除用户填入的数字（保留初始给定的数字）
+        // 清除用户填入的数字和笔记（保留初始给定的数字）
         function clearUserInput() {
             for (let row = 0; row < 9; row++) {
                 for (let col = 0; col < 9; col++) {
                     if (!givenCells[row][col]) {
                         board[row][col] = 0;
+                        notes[row][col] = []; // 同时清除笔记
                     }
                 }
             }
             selectedCell = null;
             selectedNumber = null;
             renderBoard();
-            updateStatus('已清除用户填入的数字');
+            updateStatus('已清除用户填入的数字和标记');
         }
 
         // 检查是否完成
@@ -583,13 +658,13 @@
             return newBoard;
         }
 
-        // 根据难度生成题目
+        // 根据难度生成数独题目
         function generatePuzzle(difficulty) {
-            const solution = generateSolution();
-            const puzzle = JSON.parse(JSON.stringify(solution));
+            const sol = generateSolution();
+            const puzzle = JSON.parse(JSON.stringify(sol));
             const givenCount = difficulty === 'easy' ? 36 : difficulty === 'medium' ? 30 : 24;
-
-            // 随机挖空
+            
+            // 随机移除数字
             let emptyCount = 81 - givenCount;
             while (emptyCount > 0) {
                 const row = Math.floor(Math.random() * 9);
@@ -599,90 +674,62 @@
                     emptyCount--;
                 }
             }
-
-            return { puzzle, solution };
+            
+            return { puzzle, solution: sol };
         }
 
-        // 生成选中难度的题目
+        // 生成选中难度的数独
         function generateSelectedPuzzle() {
             const difficulty = document.getElementById('difficultySelect').value;
             const { puzzle, solution: sol } = generatePuzzle(difficulty);
             board = puzzle;
             solution = sol;
-            givenCells = board.map(row => row.map(cell => cell !== 0));
+            givenCells = Array(9).fill().map(() => Array(9).fill(false));
+            
+            // 标记给定的单元格
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    if (board[row][col] !== 0) {
+                        givenCells[row][col] = true;
+                    }
+                }
+            }
+            
+            // 清空笔记
+            notes = Array(9).fill().map(() => Array(9).fill([]));
             selectedCell = null;
             selectedNumber = null;
             renderBoard();
-            updateStatus(`已生成${difficulty === 'easy' ? '简单' : difficulty === 'medium' ? '中等' : '困难'}难度题目`);
+            updateStatus(`已生成${difficulty === 'easy' ? '简单' : difficulty === 'medium' ? '中等' : '困难'}难度数独`);
         }
 
         // 求解数独
         function solvePuzzle() {
-            if (hasAnyConflict()) {
-                if (confirm('当前填入的数字存在冲突，是否清除所有用户填入的数字后重新求解？')) {
-                    clearUserInput();
-                } else {
-                    updateStatus('当前填入的数字存在冲突，请修正后再求解');
-                    return;
-                }
+            if (solution.length === 0) {
+                updateStatus('请先生成数独题目');
+                return;
             }
-
-            function isValid(board, row, col, num) {
-                for (let c = 0; c < 9; c++) {
-                    if (board[row][c] === num) return false;
-                }
-                for (let r = 0; r < 9; r++) {
-                    if (board[r][col] === num) return false;
-                }
-                const boxRow = Math.floor(row / 3) * 3;
-                const boxCol = Math.floor(col / 3) * 3;
-                for (let r = boxRow; r < boxRow + 3; r++) {
-                    for (let c = boxCol; c < boxCol + 3; c++) {
-                        if (board[r][c] === num) return false;
-                    }
-                }
-                return true;
-            }
-
-            function solve(board) {
-                for (let row = 0; row < 9; row++) {
-                    for (let col = 0; col < 9; col++) {
-                        if (board[row][col] === 0) {
-                            for (let num = 1; num <= 9; num++) {
-                                if (isValid(board, row, col, num)) {
-                                    board[row][col] = num;
-                                    if (solve(board)) return true;
-                                    board[row][col] = 0;
-                                }
-                            }
-                            return false;
-                        }
-                    }
-                }
-                return true;
-            }
-
-            const solvableBoard = board.map(row => [...row]);
-            if (solve(solvableBoard)) {
-                board = solvableBoard;
-                renderBoard();
-                updateStatus('题目已自动求解');
-            } else {
-                updateStatus('当前题目无解');
-            }
+            
+            board = JSON.parse(JSON.stringify(solution));
+            // 清空笔记
+            notes = Array(9).fill().map(() => Array(9).fill([]));
+            selectedCell = null;
+            selectedNumber = null;
+            renderBoard();
+            updateStatus('数独已解出');
         }
 
-        // 清空棋盘功能 - 打开确认模态框
+        // 清空棋盘确认
         function clearBoard() {
-            openConfirmClearModal();
+            document.getElementById('confirmClearModal').style.display = 'block';
         }
 
         // 确认清空棋盘
         function confirmClearBoard() {
-            // 完全重置所有游戏数据
             board = Array(9).fill().map(() => Array(9).fill(0));
             solution = [];
             givenCells = Array(9).fill().map(() => Array(9).fill(false));
+            notes = Array(9).fill().map(() => Array(9).fill([])); // 清除所有笔记
             selectedCell = null;
             selectedNumber = null;
             renderBoard();
@@ -690,53 +737,34 @@
             closeConfirmClearModal();
         }
 
-        // 自定义棋盘相关函数
-        function openCustomModal() {
-            document.getElementById('customModal').style.display = 'block';
+        // 关闭确认清空弹窗
+        function closeConfirmClearModal() {
+            document.getElementById('confirmClearModal').style.display = 'none';
         }
 
-        function closeCustomModal() {
-            document.getElementById('customModal').style.display = 'none';
-        }
-
-        function loadCustomPuzzle() {
-            const input = document.getElementById('customInput').value;
-            const numbers = input.split(',').map(Number);
-
-            if (numbers.length !== 81 || numbers.some(n => isNaN(n) || n < 0 || n > 9)) {
-                alert('请输入有效的81个数字（0-9），用逗号分隔');
-                return;
-            }
-
-            const puzzle = [];
-            for (let i = 0; i < 9; i++) {
-                puzzle.push(numbers.slice(i * 9, (i + 1) * 9));
-            }
-
-            board = puzzle;
-            givenCells = board.map(row => row.map(cell => cell !== 0));
-            closeCustomModal();
-            renderBoard();
-            updateStatus('已加载自定义题目');
-        }
-
-        // 关于弹窗
+        // 打开关于弹窗
         function openAboutModal() {
             document.getElementById('aboutModal').style.display = 'block';
         }
 
+        // 关闭关于弹窗
         function closeAboutModal() {
             document.getElementById('aboutModal').style.display = 'none';
         }
 
-        // 清空确认弹窗相关函数
-        function openConfirmClearModal() {
-            document.getElementById('confirmClearModal').style.display = 'block';
-        }
-
-        function closeConfirmClearModal() {
-            document.getElementById('confirmClearModal').style.display = 'none';
-        }
+        // 模式切换事件监听
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // 移除所有按钮的active类
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                // 给当前点击的按钮添加active类
+                this.classList.add('active');
+                // 更新输入模式
+                inputMode = this.dataset.mode;
+                updateStatus(`已切换到${inputMode === 'number' ? '数字' : '标记'}模式`);
+                renderBoard(); // 重新渲染以显示当前模式的内容
+            });
+        });
 
         // 初始化游戏
         initBoard();
