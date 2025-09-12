@@ -80,9 +80,8 @@
         }
 
         .sudoku-board {
-            width: 100%;
             max-width: 450px;
-            margin: 0 auto 20px;
+            margin: 0 auto;
             border: 3px solid #292929;
             border-radius: 4px;
             background: white;
@@ -103,10 +102,8 @@
 
         .sudoku-cell {
             flex: 1;
-            /* aspect-ratio: 1; */
             width: 50px;
             height: 50px;
-            /* 通过内边距维持正方形比例，兼容所有设备 */
             border-right: 1px solid #000000;
             display: flex;
             align-items: center;
@@ -205,7 +202,7 @@
         }
 
         .mode-toggle {
-            margin-bottom: 15px;
+            margin: 8px;
             display: flex;
             justify-content: center;
         }
@@ -291,6 +288,7 @@
         }
 
         /* 响应式调整 */
+        /* 屏幕宽度小于等于600px时，将字体大小缩小 */
         @media (max-width: 600px) {
             .header {
                 font-size: 20px;
@@ -309,16 +307,17 @@
             .game-area {
                 padding: 15px 10px;
             }
+            .sudoku-cell {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
         }
-
+        /* 屏幕宽度小于等于480px时，将字体大小缩小 */
         @media (max-width: 480px) {
             .container {
                 border-radius: 0;
                 min-height: 100vh;
-            }
-
-            .sudoku-cell {
-                font-size: 16px;
             }
 
             .note {
@@ -341,6 +340,10 @@
             .modal-btn {
                 padding: 6px 12px;
                 font-size: 13px;
+            }
+            .sudoku-cell {
+                width: 35px;
+                height: 35px;
             }
         }
 
