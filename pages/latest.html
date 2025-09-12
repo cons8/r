@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全部应用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            padding: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+            /* 让body在大屏幕上居中，避免过宽 */
+        }
+
+        .header {
+            font-size: 18px;
+            padding: 8px 0;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-bottom: 1px solid #000000;
+        }
+        .goback {
+            text-decoration: none;
+            color: black;
+        }
+
+        .goback svg,
+        .header-title {
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a class="goback" href="../index.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
+                <path fill="#000000" d="m7.825 13l5.6 5.6L12 20l-8-8l8-8l1.425 1.4l-5.6 5.6H20v2z" />
+            </svg>
+            <div class="header-title">主页</div>
+        </a>
+    </div>
+    <div class="container"> 
+        <p>数独：支持小数字标记</p>
+    </div>
+</body>
+
+</html>
