@@ -1,73 +1,68 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>井字棋游戏</title>
+    <title>井字棋</title>
     <style>
         * {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
             font-family: Arial, sans-serif;
             background-color: #ffffff;
             color: #000000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            text-align: center;
             padding: 20px;
         }
 
-        .game-container {
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-
         h1 {
-            font-size: 2em;
+            font-size: 24px;
             margin-bottom: 20px;
             font-weight: bold;
+        }
+
+        .score-board {
+            margin: 20px 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .score-item {
+            display: inline-block;
+            margin: 0 15px;
         }
 
         .game-info {
-            font-size: 1.2em;
+            font-size: 18px;
             margin-bottom: 20px;
-            min-height: 30px;
+            height: 25px;
         }
 
         .game-board {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 2px;
-            background-color: #000000;
-            border: 3px solid #000000;
+            width: 306px;
+            height: 306px;
             margin: 0 auto 20px;
-            width: 100%;
-            max-width: 300px;
-            aspect-ratio: 1;
+            border: 3px solid #000000;
+            position: relative;
         }
 
         .cell {
+            width: 100px;
+            height: 100px;
             background-color: #ffffff;
-            border: none;
-            font-size: 2em;
+            border: 1px solid #000000;
+            font-size: 36px;
             font-weight: bold;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.1s ease;
+            position: absolute;
+            text-align: center;
+            line-height: 100px;
         }
 
-        .cell:hover:not(.occupied) {
+        .cell:hover {
             background-color: #f0f0f0;
         }
 
@@ -75,11 +70,23 @@
             cursor: not-allowed;
         }
 
+        .cell.occupied:hover {
+            background-color: #ffffff;
+        }
+
+        /* 棋盘位置 */
+        .cell-0 { top: 0px; left: 0px; }
+        .cell-1 { top: 0px; left: 102px; }
+        .cell-2 { top: 0px; left: 204px; }
+        .cell-3 { top: 102px; left: 0px; }
+        .cell-4 { top: 102px; left: 102px; }
+        .cell-5 { top: 102px; left: 204px; }
+        .cell-6 { top: 204px; left: 0px; }
+        .cell-7 { top: 204px; left: 102px; }
+        .cell-8 { top: 204px; left: 204px; }
+
         .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
+            margin-top: 20px;
         }
 
         button {
@@ -87,23 +94,15 @@
             color: #000000;
             border: 2px solid #000000;
             padding: 10px 20px;
-            font-size: 1em;
+            font-size: 16px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.1s ease;
+            margin: 5px;
         }
 
         button:hover {
             background-color: #000000;
             color: #ffffff;
-        }
-
-        .score-board {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-            font-size: 1.1em;
-            font-weight: bold;
         }
 
         .winner {
@@ -115,182 +114,206 @@
             color: #666666;
         }
 
+        /* 移动端适配 */
         @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
             h1 {
-                font-size: 1.5em;
+                font-size: 20px;
             }
-
-            .game-info {
-                font-size: 1em;
+            
+            .game-board {
+                width: 255px;
+                height: 255px;
             }
-
+            
             .cell {
-                font-size: 1.5em;
+                width: 83px;
+                height: 83px;
+                font-size: 28px;
+                line-height: 83px;
             }
-
-            .score-board {
-                font-size: 1em;
+            
+            .cell-0 { top: 0px; left: 0px; }
+            .cell-1 { top: 0px; left: 85px; }
+            .cell-2 { top: 0px; left: 170px; }
+            .cell-3 { top: 85px; left: 0px; }
+            .cell-4 { top: 85px; left: 85px; }
+            .cell-5 { top: 85px; left: 170px; }
+            .cell-6 { top: 170px; left: 0px; }
+            .cell-7 { top: 170px; left: 85px; }
+            .cell-8 { top: 170px; left: 170px; }
+            
+            .score-item {
+                display: block;
+                margin: 5px 0;
             }
-
+            
+            .game-info {
+                font-size: 16px;
+            }
+            
             button {
+                font-size: 14px;
                 padding: 8px 16px;
-                font-size: 0.9em;
             }
         }
     </style>
-    <script src="https://puc.poecdn.net/authenticated_preview_page/syncedState.bd4eeeb8e8e02052ee92.js"></script>
 </head>
-
 <body>
-    <div class="game-container">
-        <h1>井字棋游戏</h1>
-
-        <div class="score-board">
-            <div>玩家 X: <span id="scoreX">0</span></div>
-            <div>平局: <span id="scoreDraw">0</span></div>
-            <div>玩家 O: <span id="scoreO">0</span></div>
-        </div>
-
-        <div class="game-info" id="gameInfo">玩家 X 的回合</div>
-
-        <div class="game-board" id="gameBoard">
-            <button class="cell" data-index="0"></button>
-            <button class="cell" data-index="1"></button>
-            <button class="cell" data-index="2"></button>
-            <button class="cell" data-index="3"></button>
-            <button class="cell" data-index="4"></button>
-            <button class="cell" data-index="5"></button>
-            <button class="cell" data-index="6"></button>
-            <button class="cell" data-index="7"></button>
-            <button class="cell" data-index="8"></button>
-        </div>
-
-        <div class="controls">
-            <button id="resetGame">重新开始</button>
-            <button id="resetScore">重置分数</button>
-        </div>
+    <h1>井字棋</h1>
+    
+    <div class="score-board">
+        <div class="score-item">玩家 X: <span id="scoreX">0</span></div>
+        <div class="score-item">平局: <span id="scoreDraw">0</span></div>
+        <div class="score-item">玩家 O: <span id="scoreO">0</span></div>
+    </div>
+    
+    <div class="game-info" id="gameInfo">玩家 X 的回合</div>
+    
+    <div class="game-board" id="gameBoard">
+        <div class="cell cell-0" data-index="0"></div>
+        <div class="cell cell-1" data-index="1"></div>
+        <div class="cell cell-2" data-index="2"></div>
+        <div class="cell cell-3" data-index="3"></div>
+        <div class="cell cell-4" data-index="4"></div>
+        <div class="cell cell-5" data-index="5"></div>
+        <div class="cell cell-6" data-index="6"></div>
+        <div class="cell cell-7" data-index="7"></div>
+        <div class="cell cell-8" data-index="8"></div>
+    </div>
+    
+    <div class="controls">
+        <button id="resetGame">重新开始</button>
+        <button id="resetScore">重置分数</button>
     </div>
 
     <script>
-        class TicTacToe {
-            constructor() {
-                this.board = ['', '', '', '', '', '', '', '', ''];
-                this.currentPlayer = 'X';
-                this.gameActive = true;
-                this.scores = { X: 0, O: 0, draw: 0 };
-
-                this.cells = document.querySelectorAll('.cell');
-                this.gameInfo = document.getElementById('gameInfo');
-                this.resetGameBtn = document.getElementById('resetGame');
-                this.resetScoreBtn = document.getElementById('resetScore');
-                this.scoreX = document.getElementById('scoreX');
-                this.scoreO = document.getElementById('scoreO');
-                this.scoreDraw = document.getElementById('scoreDraw');
-
-                this.winConditions = [
-                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // 行
-                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // 列
-                    [0, 4, 8], [2, 4, 6] // 对角线
-                ];
-
-                this.initializeGame();
-                this.updateScoreDisplay();
+        var board = ['', '', '', '', '', '', '', '', ''];
+        var currentPlayer = 'X';
+        var gameActive = true;
+        var scores = { X: 0, O: 0, draw: 0 };
+        
+        var cells = document.getElementsByClassName('cell');
+        var gameInfo = document.getElementById('gameInfo');
+        var resetGameBtn = document.getElementById('resetGame');
+        var resetScoreBtn = document.getElementById('resetScore');
+        var scoreX = document.getElementById('scoreX');
+        var scoreO = document.getElementById('scoreO');
+        var scoreDraw = document.getElementById('scoreDraw');
+        
+        var winConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // 行
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // 列
+            [0, 4, 8], [2, 4, 6] // 对角线
+        ];
+        
+        function initializeGame() {
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].addEventListener('click', handleCellClick);
             }
-
-            initializeGame() {
-                this.cells.forEach(cell => {
-                    cell.addEventListener('click', this.handleCellClick.bind(this));
-                });
-
-                this.resetGameBtn.addEventListener('click', this.resetGame.bind(this));
-                this.resetScoreBtn.addEventListener('click', this.resetScore.bind(this));
+            
+            resetGameBtn.addEventListener('click', resetGame);
+            resetScoreBtn.addEventListener('click', resetScore);
+            updateScoreDisplay();
+        }
+        
+        function handleCellClick(event) {
+            var clickedCell = event.target;
+            var clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+            
+            if (board[clickedCellIndex] !== '' || !gameActive) {
+                return;
             }
-
-            handleCellClick(event) {
-                const clickedCell = event.target;
-                const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
-
-                if (this.board[clickedCellIndex] !== '' || !this.gameActive) {
-                    return;
+            
+            updateCell(clickedCell, clickedCellIndex);
+            checkResult();
+        }
+        
+        function updateCell(cell, index) {
+            board[index] = currentPlayer;
+            cell.innerHTML = currentPlayer;
+            cell.className += ' occupied';
+        }
+        
+        function switchPlayer() {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            gameInfo.innerHTML = '玩家 ' + currentPlayer + ' 的回合';
+        }
+        
+        function checkResult() {
+            var roundWon = false;
+            
+            for (var i = 0; i < winConditions.length; i++) {
+                var condition = winConditions[i];
+                var a = condition[0];
+                var b = condition[1];
+                var c = condition[2];
+                
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    roundWon = true;
+                    break;
                 }
-
-                this.updateCell(clickedCell, clickedCellIndex);
-                this.checkResult();
             }
-
-            updateCell(cell, index) {
-                this.board[index] = this.currentPlayer;
-                cell.textContent = this.currentPlayer;
-                cell.classList.add('occupied');
+            
+            if (roundWon) {
+                gameInfo.innerHTML = '<span class="winner">玩家 ' + currentPlayer + ' 获胜！</span>';
+                gameActive = false;
+                scores[currentPlayer]++;
+                updateScoreDisplay();
+                return;
             }
-
-            switchPlayer() {
-                this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
-                this.gameInfo.textContent = `玩家 ${this.currentPlayer} 的回合`;
-            }
-
-            checkResult() {
-                let roundWon = false;
-
-                for (let i = 0; i < this.winConditions.length; i++) {
-                    const [a, b, c] = this.winConditions[i];
-                    if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
-                        roundWon = true;
-                        break;
-                    }
+            
+            var roundDraw = true;
+            for (var i = 0; i < board.length; i++) {
+                if (board[i] === '') {
+                    roundDraw = false;
+                    break;
                 }
-
-                if (roundWon) {
-                    this.gameInfo.innerHTML = `<span class="winner">玩家 ${this.currentPlayer} 获胜！</span>`;
-                    this.gameActive = false;
-                    this.scores[this.currentPlayer]++;
-                    this.updateScoreDisplay();
-                    return;
-                }
-
-                const roundDraw = !this.board.includes('');
-                if (roundDraw) {
-                    this.gameInfo.innerHTML = '<span class="draw">平局！</span>';
-                    this.gameActive = false;
-                    this.scores.draw++;
-                    this.updateScoreDisplay();
-                    return;
-                }
-
-                this.switchPlayer();
             }
-
-            resetGame() {
-                this.board = ['', '', '', '', '', '', '', '', ''];
-                this.currentPlayer = 'X';
-                this.gameActive = true;
-                this.gameInfo.textContent = '玩家 X 的回合';
-
-                this.cells.forEach(cell => {
-                    cell.textContent = '';
-                    cell.classList.remove('occupied');
-                });
+            
+            if (roundDraw) {
+                gameInfo.innerHTML = '<span class="draw">平局！</span>';
+                gameActive = false;
+                scores.draw++;
+                updateScoreDisplay();
+                return;
             }
-
-            resetScore() {
-                this.scores = { X: 0, O: 0, draw: 0 };
-                this.updateScoreDisplay();
-            }
-
-            updateScoreDisplay() {
-                this.scoreX.textContent = this.scores.X;
-                this.scoreO.textContent = this.scores.O;
-                this.scoreDraw.textContent = this.scores.draw;
+            
+            switchPlayer();
+        }
+        
+        function resetGame() {
+            board = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+            gameActive = true;
+            gameInfo.innerHTML = '玩家 X 的回合';
+            
+            for (var i = 0; i < cells.length; i++) {
+                cells[i].innerHTML = '';
+                cells[i].className = cells[i].className.replace(' occupied', '');
             }
         }
-
-        // 游戏启动
-        document.addEventListener('DOMContentLoaded', () => {
-            new TicTacToe();
-        });
+        
+        function resetScore() {
+            scores = { X: 0, O: 0, draw: 0 };
+            updateScoreDisplay();
+        }
+        
+        function updateScoreDisplay() {
+            scoreX.innerHTML = scores.X;
+            scoreO.innerHTML = scores.O;
+            scoreDraw.innerHTML = scores.draw;
+        }
+        
+        // 页面加载完成后初始化游戏
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeGame);
+        } else {
+            initializeGame();
+        }
     </script>
-
-
 </body>
-
 </html>
