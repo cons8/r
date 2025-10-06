@@ -101,6 +101,7 @@
             margin-left: 8pt;
             color: #999999;
         }
+
         .app-logo {
             height: 20pt;
             width: 20pt;
@@ -135,7 +136,7 @@
             <a class="tab-item-more" href="./pages/all.html">All</a>
         </div>
 
-        <div class="app-list">
+        <div id="app-list" class="app-list">
             <a class="app tool recommend" href="./pages/Clock.html">
                 <div class="avater">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
@@ -268,6 +269,16 @@
                 </div>
                 <div class="app-title">设置</div>
             </a>
+            <a class="app webside display-none" href="./pages/add.html">
+                <div class="avater">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
+                        <path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="1.5"
+                            d="M9 12h3m3 0h-3m0 0V9m0 3v3m9-11.4v16.8a.6.6 0 0 1-.6.6H3.6a.6.6 0 0 1-.6-.6V3.6a.6.6 0 0 1 .6-.6h16.8a.6.6 0 0 1 .6.6" />
+                    </svg>
+                </div>
+                <div class="app-title">添加网址</div>
+            </a>
             <a class="app webside display-none" href="https://m.jjwxc.net/">
                 <div class="avater">
                     <div class="app-logo">晋江</div>
@@ -280,12 +291,7 @@
                 </div>
                 <div class="app-title">长佩文学</div>
             </a>
-            <a class="app webside display-none" href="https://kzo.moe/">
-                <div class="avater">
-                    <div class="app-logo">Kmoe</div>
-                </div>
-                <div class="app-title">Kmoe</div>
-            </a>
+
         </div>
     </main>
     <div id="mask" class="mask" onclick="hideLog()"></div>
@@ -328,5 +334,6 @@
     data-cf-beacon='{"token": "7ec7c71eaa7c4184ac8db98625fe0492"}'></script><!-- End Cloudflare Web Analytics -->
 <script src="./script/index_tabs.js"></script>
 <script src="./script/index.js"></script>
+<script src="./script/indexUserAppList.js"></script>
 
 </html>

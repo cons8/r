@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全部应用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            padding: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+            /* 让body在大屏幕上居中，避免过宽 */
+        }
+
+        .header {
+            font-size: 18px;
+            padding: 8px 0;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-bottom: 1px solid #000000;
+        }
+
+
+        .goback {
+            text-decoration: none;
+            color: black;
+        }
+
+        .goback svg,
+        .header-title {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .app-item {
+            font-size: 18px;
+            padding: 8px 0;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-bottom: 1px solid #000000;
+        }
+
+        .app-name {
+            display: inline-block;
+        }
+
+        .app-desc {
+            display: inline-block;
+            font-size: small;
+            color: #424242;
+        }
+
+        .app-href {
+            display: inline-block;
+        }
+
+        .app-button {
+            float: right;
+            background-color: #000000;
+            color: rgb(255, 255, 255);
+            border: none;
+            border-radius: 4pt;
+            padding: 4pt 8pt;
+            cursor: pointer;
+        }
+
+        .app-input {
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 2px solid #000000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a class="goback" href="../index.html">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
+                <path fill="#000000" d="m7.825 13l5.6 5.6L12 20l-8-8l8-8l1.425 1.4l-5.6 5.6H20v2z" />
+            </svg>
+            <div class="header-title">添加网址</div>
+        </a>
+    </div>
+    <div id="app-list" class="app-list">
+        <div class="app-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15pt" height="15pt" viewBox="0 0 24 24">
+                <path fill="#000000" d="M5 21V5q0-.825.588-1.412T7 3h10q.825 0 1.413.588T19 5v16l-7-3z" />
+            </svg>
+            <div class="app-name">应用名称</div>
+            <div class="app-desc">添加一个应用</div>
+            <div class="app-href">www.example.com</div>
+            <button class="app-button">删除</button>
+        </div>
+    </div>
+    <div id="add-app" class="app-item">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15pt" height="15pt" viewBox="0 0 24 24">
+            <path fill="#000000" d="M5 21V5q0-.825.588-1.412T7 3h10q.825 0 1.413.588T19 5v16l-7-3z" />
+        </svg>
+        <input id="input-app-name" class="input-app-name app-input" type="text" placeholder="请输入应用名称" />
+        <input id="input-app-href" class="input-app-href app-input" type="text" placeholder="请输入应用链接" />
+        <button class="app-button" onclick="addApp()">添加</button>
+    </div>
+    <p>最多添加10个应用</p>
+</body>
+<script>
+    // 查询应用
+    let userAppList = JSON.parse(localStorage.getItem("userAppList")) || [];
+    // 渲染应用
+    function showAppList() {
+        // 清空应用列表
+        document.querySelector(".app-list").innerHTML = "";
+        for (let i = 0; i < userAppList.length; i++) {
+            let app = userAppList[i];
+            let appItem = document.createElement("div");
+            appItem.className = "app-item";
+            appItem.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="15pt" height="15pt" viewBox="0 0 24 24">
+                <path fill="#000000" d="M5 21V5q0-.825.588-1.412T7 3h10q.825 0 1.413.588T19 5v16l-7-3z" />
+            </svg>
+            <div class="app-name">${app.name}</div>
+            <div class="app-href">${app.href}</div>
+            <button class="app-button" onclick="removeApp(${app.id})">删除</button>
+        `;
+            document.querySelector(".app-list").appendChild(appItem);
+        }
+    }
+
+    // 添加应用
+    function addApp() {
+        // 最多添加10个应用
+        if (userAppList.length >= 10) {
+            document.getElementById("add-app").style.display = "none";
+            return;
+        }
+
+        let appName = document.getElementById("input-app-name").value;
+        // 检查用户是否输入了https://
+        let appHref = document.getElementById("input-app-href").value;
+        if (!appHref.startsWith("https://")) {
+            appHref = "https://" + appHref;
+        }
+        // appId
+        let appId = Date.now();
+        if (appName && appHref) {
+            userAppList.push({
+                id: appId,
+                name: appName,
+                href: appHref
+            })
+            localStorage.setItem("userAppList", JSON.stringify(userAppList));
+            // 清空输入框
+            document.getElementById("input-app-name").value = "";
+            document.getElementById("input-app-href").value = "";
+            showAppList();
+        }
+    }
+
+    // 删除应用
+    function removeApp(id) {
+        if (userAppList.length <= 10) {
+            document.getElementById("add-app").style.display = "block";
+        }
+        userAppList = userAppList.filter(app => app.id !== id);
+        localStorage.setItem("userAppList", JSON.stringify(userAppList));
+        showAppList();
+    }
+    showAppList();
+</script>
+
+</html>
