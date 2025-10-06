@@ -171,7 +171,16 @@
         localStorage.setItem("userAppList", JSON.stringify(userAppList));
         showAppList();
     }
+    function showAddApp() {
+        if (userAppList.length >= 10) {
+            document.getElementById("add-app").style.display = "none";
+        } else {
+            document.getElementById("add-app").style.display = "block";
+        }
+    }
+
     showAppList();
+    showAddApp();
 </script>
 
 </html>
