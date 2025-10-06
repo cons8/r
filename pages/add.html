@@ -108,7 +108,7 @@
         <input id="input-app-href" class="input-app-href app-input" type="text" placeholder="请输入应用链接" />
         <button class="app-button" onclick="addApp()">添加</button>
     </div>
-    <p>最多添加10个应用</p>
+    <p>最多添加10个标签</p>
 </body>
 <script>
     // 查询应用
@@ -136,9 +136,8 @@
     // 添加应用
     function addApp() {
         // 最多添加10个应用
-        if (userAppList.length >= 10) {
+        if (userAppList.length >= 9) {
             document.getElementById("add-app").style.display = "none";
-            return;
         }
 
         let appName = document.getElementById("input-app-name").value;
