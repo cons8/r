@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>墨水屏五子棋（三连预判+四连必堵版）</title>
+    <style>
+        /* 全局样式重置，兼容老设备 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Arial", "Microsoft YaHei", sans-serif;
+        }
+
+        /* 墨水屏适配：浅灰背景模拟墨水屏底色，黑白主色调，无渐变/阴影减少渲染压力 */
+        body {
+            background-color: #f5f5f0;
+            color: #333;
+            padding: 20px 10px;
+            text-align: center;
+        }
+
+        /* 模式选择界面 */
+        .mode-select {
+            margin: 50px auto;
+            max-width: 300px;
+        }
+
+        .mode-title {
+            font-size: 24px;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+
+        .mode-btn {
+            display: block;
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+            background-color: #e0e0d8;
+            border: 2px solid #666;
+            border-radius: 8px;
+            font-size: 20px;
+            margin-bottom: 25px;
+            cursor: pointer;
+        }
+
+        .mode-btn:active {
+            background-color: #ccc;
+        }
+
+        /* 游戏界面（默认隐藏） */
+        .game-container {
+            display: none;
+            margin: 0 auto;
+            max-width: 420px;
+        }
+
+        .game-status {
+            font-size: 18px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+
+        /* 棋盘：采用固定格子大小，避免复杂布局，兼容老设备 */
+        .chess-board {
+            position: relative;
+            width: 390px;
+            height: 390px;
+            margin: 0 auto;
+            background-color: #e9e9d9;
+            border: 1px solid #333;
+        }
+
+        /* 棋盘格子（动态生成） */
+        .chess-cell {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            box-sizing: border-box;
+            border-right: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* 棋盘边框补全（避免最后一行/列无边框） */
+        .chess-board::after, .chess-board::before {
+            content: "";
+            position: absolute;
+            background-color: #333;
+        }
+
+        .chess-board::after {
+            width: 1px;
+            height: 390px;
+            top: 0;
+            right: 0;
+        }
+
+        .chess-board::before {
+            width: 390px;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+        }
+
+        /* 棋子样式：黑白两色，圆形，无复杂效果 */
+        .chess-piece {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            margin-left: -11px;
+            margin-top: -11px;
+            cursor: default;
+            z-index: 10;
+        }
+
+        .black {
+            background-color: #000;
+            border: 1px solid #333;
+        }
+
+        .white {
+            background-color: #fff;
+            border: 1px solid #ccc;
+        }
+
+        /* 重新开始按钮 */
+        .restart-btn {
+            width: 180px;
+            height: 50px;
+            line-height: 50px;
+            background-color: #e0e0d8;
+            border: 2px solid #666;
+            border-radius: 8px;
+            font-size: 18px;
+            margin: 20px auto;
+            cursor: pointer;
+        }
+
+        .restart-btn:active {
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- 模式选择界面 -->
+    <div class="mode-select" id="modeSelect">
+        <div class="mode-title">选择游戏模式</div>
+        <button class="mode-btn" id="twoPlayerBtn">双人对战</button>
+        <button class="mode-btn" id="aiPlayerBtn">人机对战</button>
+    </div>
+
+    <!-- 游戏界面 -->
+    <div class="game-container" id="gameContainer">
+        <div class="game-status" id="gameStatus">黑棋先行</div>
+        <div class="chess-board" id="chessBoard"></div>
+        <button class="restart-btn" id="restartBtn">重新开始</button>
+    </div>
+
+    <script>
+        // 全局变量（采用var声明，兼容老设备，避免let/const新特性）
+        var BOARD_SIZE = 15; // 五子棋标准15x15棋盘
+        var CELL_SIZE = 26;  // 每个格子的大小（px）
+        var chessData = [];  // 棋盘数据存储：0=空，1=黑棋，2=白棋
+        var currentPlayer = 1; // 当前玩家：1=黑棋，2=白棋
+        var gameMode = "";    // 游戏模式：2p=双人，ai=人机
+        var gameOver = false; // 游戏是否结束
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 绑定模式选择按钮事件
+            document.getElementById("twoPlayerBtn").onclick = function() {
+                startGame("2p");
+            };
+            document.getElementById("aiPlayerBtn").onclick = function() {
+                startGame("ai");
+            };
+
+            // 绑定重新开始按钮事件
+            document.getElementById("restartBtn").onclick = function() {
+                restartGame();
+            };
+
+            // 初始化棋盘数据二维数组
+            initChessData();
+        };
+
+        // 初始化棋盘数据（全部置空）
+        function initChessData() {
+            chessData = [];
+            for (var i = 0; i < BOARD_SIZE; i++) {
+                chessData[i] = [];
+                for (var j = 0; j < BOARD_SIZE; j++) {
+                    chessData[i][j] = 0;
+                }
+            }
+        }
+
+        // 开始游戏（切换界面，初始化棋盘）
+        function startGame(mode) {
+            gameMode = mode;
+            gameOver = false;
+            currentPlayer = 1; // 黑棋先行
+
+            // 切换界面显示：隐藏选择界面，显示游戏界面
+            document.getElementById("modeSelect").style.display = "none";
+            document.getElementById("gameContainer").style.display = "block";
+
+            // 渲染棋盘并更新状态提示
+            renderChessBoard();
+            updateGameStatus();
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            gameOver = false;
+            currentPlayer = 1;
+            initChessData();
+
+            // 清空棋盘DOM并重新渲染
+            var chessBoard = document.getElementById("chessBoard");
+            while (chessBoard.firstChild) {
+                chessBoard.removeChild(chessBoard.firstChild);
+            }
+            renderChessBoard();
+            updateGameStatus();
+        }
+
+        // 渲染棋盘（动态生成格子）
+        function renderChessBoard() {
+            var chessBoard = document.getElementById("chessBoard");
+            for (var x = 0; x < BOARD_SIZE; x++) {
+                for (var y = 0; y < BOARD_SIZE; y++) {
+                    // 创建格子元素
+                    var cell = document.createElement("div");
+                    cell.className = "chess-cell";
+                    cell.style.left = (x * CELL_SIZE) + "px";
+                    cell.style.top = (y * CELL_SIZE) + "px";
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+
+                    // 绑定格子点击事件（落子）
+                    cell.onclick = function() {
+                        if (!gameOver) {
+                            var x = parseInt(this.dataset.x);
+                            var y = parseInt(this.dataset.y);
+                            placeChess(x, y);
+                        }
+                    };
+
+                    chessBoard.appendChild(cell);
+                }
+            }
+        }
+
+        // 落子逻辑
+        function placeChess(x, y) {
+            // 合法性判断：坐标在范围内、当前位置为空、游戏未结束
+            if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) {
+                return;
+            }
+            if (chessData[x][y] !== 0 || gameOver) {
+                return;
+            }
+
+            // 更新棋盘数据并绘制棋子
+            chessData[x][y] = currentPlayer;
+            drawChessPiece(x, y, currentPlayer);
+
+            // 判断是否获胜
+            if (checkWin(x, y)) {
+                gameOver = true;
+                var winner = currentPlayer === 1 ? "黑棋" : "白棋";
+                alert(winner + "获胜！");
+                updateGameStatus(winner + "获胜，点击重新开始");
+                return;
+            }
+
+            // 切换玩家（双人模式）或电脑落子（人机模式）
+            if (gameMode === "2p") {
+                // 双人模式：切换玩家
+                currentPlayer = currentPlayer === 1 ? 2 : 1;
+                updateGameStatus();
+            } else if (gameMode === "ai") {
+                // 人机模式：电脑（白棋）落子
+                updateGameStatus("电脑思考中...");
+                // 延迟落子（模拟思考，避免瞬间落子，兼容老设备）
+                setTimeout(computerMove, 500);
+            }
+        }
+
+        // 绘制棋子
+        function drawChessPiece(x, y, player) {
+            var chessBoard = document.getElementById("chessBoard");
+            var piece = document.createElement("div");
+            piece.className = "chess-piece " + (player === 1 ? "black" : "white");
+            // 棋子居中定位（基于格子坐标）
+            piece.style.left = (x * CELL_SIZE + CELL_SIZE / 2) + "px";
+            piece.style.top = (y * CELL_SIZE + CELL_SIZE / 2) + "px";
+            chessBoard.appendChild(piece);
+        }
+
+        // 【核心优化】电脑落子（七级策略：优先获胜→堵四连→堵一步成五→三连预判→自身连子→中心周边→兜底随机）
+        function computerMove() {
+            if (gameOver) {
+                return;
+            }
+
+            var x = -1;
+            var y = -1;
+            var aiPlayer = 2; // AI自身是白棋
+            var humanPlayer = 1; // 玩家是黑棋
+            var winPos = {x: -1, y: -1};
+            var blockFourPos = {x: -1, y: -1};
+            var blockThreePos = {x: -1, y: -1};
+
+            // 步骤1：最高优先级 - AI自身寻找获胜点（四子连珠缺1子，直接落子获胜）
+            winPos = findWinPosition(aiPlayer);
+            if (winPos.x !== -1 && winPos.y !== -1) {
+                x = winPos.x;
+                y = winPos.y;
+            }
+            // 步骤2：超高级优先级 - 必堵玩家四连（无论是否能一步成五，只要连成四子就堵）
+            else if ((blockFourPos = scanHumanFourConnect(humanPlayer)).x !== -1 && blockFourPos.y !== -1) {
+                x = blockFourPos.x;
+                y = blockFourPos.y;
+            }
+            // 步骤3：次高优先级 - 堵截玩家一步成五的致命点
+            else if ((winPos = findWinPosition(humanPlayer)).x !== -1 && winPos.y !== -1) {
+                x = winPos.x;
+                y = winPos.y;
+            }
+            // 步骤4：中高优先级 - 三连预判（提前堵截玩家三连趋势，优先活三，其次冲三）
+            else if ((blockThreePos = scanHumanThreeConnect(humanPlayer)).x !== -1 && blockThreePos.y !== -1) {
+                x = blockThreePos.x;
+                y = blockThreePos.y;
+            }
+            // 步骤5：中优先级 - 寻找AI自身连子趋势（3连→2连，提升进攻连贯性，避免乱下）
+            else if ((winPos = findBetterPosition(aiPlayer)).x !== -1 && winPos.y !== -1) {
+                x = winPos.x;
+                y = winPos.y;
+            }
+            // 步骤6：低优先级 - 落子中心及周边区域（无连子趋势时，保持策略性，不随机乱飞）
+            else if ((winPos = findCenterAroundPosition()).x !== -1 && winPos.y !== -1) {
+                x = winPos.x;
+                y = winPos.y;
+            }
+            // 步骤7：兜底 - 纯随机落子（确保无有效位置时，游戏能继续进行）
+            else {
+                while (true) {
+                    x = Math.floor(Math.random() * BOARD_SIZE);
+                    y = Math.floor(Math.random() * BOARD_SIZE);
+                    if (chessData[x][y] === 0) {
+                        break;
+                    }
+                }
+            }
+
+            // 电脑落子（白棋，玩家2）
+            chessData[x][y] = aiPlayer;
+            drawChessPiece(x, y, aiPlayer);
+
+            // 判断电脑是否获胜
+            if (checkWin(x, y)) {
+                gameOver = true;
+                alert("电脑（白棋）获胜！");
+                updateGameStatus("电脑获胜，点击重新开始");
+                return;
+            }
+
+            // 切换回玩家（黑棋）
+            currentPlayer = humanPlayer;
+            updateGameStatus();
+        }
+
+        // 【辅助函数】寻找自身获胜点/玩家致命堵截点（落子后直接形成五子连珠）
+        function findWinPosition(targetPlayer) {
+            var pos = {x: -1, y: -1}; // 初始化获胜位置
+
+            // 遍历整个棋盘，扫描每个空位
+            for (var i = 0; i < BOARD_SIZE; i++) {
+                for (var j = 0; j < BOARD_SIZE; j++) {
+                    // 只扫描空位（可能的获胜点/堵截点）
+                    if (chessData[i][j] !== 0) {
+                        continue;
+                    }
+
+                    // 临时将该空位设为目标玩家棋子，判断是否能形成五子连珠
+                    chessData[i][j] = targetPlayer;
+                    if (checkWin(i, j)) {
+                        pos.x = i;
+                        pos.y = j;
+                        // 恢复棋盘数据（仅模拟判断，不真实落子）
+                        chessData[i][j] = 0;
+                        return pos; // 找到获胜点/致命堵截点，直接返回
+                    }
+                    // 恢复棋盘数据
+                    chessData[i][j] = 0;
+                }
+            }
+
+            return pos; // 无获胜点/堵截点，返回默认值
+        }
+
+        // 【核心】扫描玩家四连（必堵逻辑：覆盖四大方向，只要连成四子就返回堵截位置）
+        function scanHumanFourConnect(humanPlayer) {
+            var pos = {x: -1, y: -1};
+            var count = 0;
+
+            // 1. 横向扫描（左右方向，寻找四子连珠）
+            for (var y = 0; y < BOARD_SIZE; y++) {
+                for (var x = 0; x < BOARD_SIZE; x++) {
+                    if (chessData[x][y] === humanPlayer) {
+                        count++;
+                        // 找到四子连珠，寻找相邻空位进行堵截
+                        if (count === 4) {
+                            // 尝试堵截左侧
+                            if (x - 4 >= 0 && chessData[x - 4][y] === 0) {
+                                pos.x = x - 4;
+                                pos.y = y;
+                                return pos;
+                            }
+                            // 尝试堵截右侧
+                            if (x + 1 < BOARD_SIZE && chessData[x + 1][y] === 0) {
+                                pos.x = x + 1;
+                                pos.y = y;
+                                return pos;
+                            }
+                        }
+                    } else {
+                        count = 0;
+                    }
+                }
+                count = 0;
+            }
+
+            // 2. 纵向扫描（上下方向，寻找四子连珠）
+            for (var x = 0; x < BOARD_SIZE; x++) {
+                for (var y = 0; y < BOARD_SIZE; y++) {
+                    if (chessData[x][y] === humanPlayer) {
+                        count++;
+                        // 找到四子连珠，寻找相邻空位进行堵截
+                        if (count === 4) {
+                            // 尝试堵截上方
+                            if (y - 4 >= 0 && chessData[x][y - 4] === 0) {
+                                pos.x = x;
+                                pos.y = y - 4;
+                                return pos;
+                            }
+                            // 尝试堵截下方
+                            if (y + 1 < BOARD_SIZE && chessData[x][y + 1] === 0) {
+                                pos.x = x;
+                                pos.y = y + 1;
+                                return pos;
+                            }
+                        }
+                    } else {
+                        count = 0;
+                    }
+                }
+                count = 0;
+            }
+
+            // 3. 左上→右下斜向扫描（寻找四子连珠）
+            for (var start = 0; start < BOARD_SIZE * 2 - 1; start++) {
+                var x = Math.min(start, BOARD_SIZE - 1);
+                var y = Math.max(0, start - BOARD_SIZE + 1);
+                count = 0;
+                var tempPos = [];
+                while (x >= 0 && y < BOARD_SIZE) {
+                    if (chessData[x][y] === humanPlayer) {
+                        count++;
+                        tempPos.push({x: x, y: y});
+                    } else {
+                        count = 0;
+                        tempPos = [];
+                    }
+                    // 找到四子连珠，寻找相邻空位堵截
+                    if (count === 4) {
+                        // 堵截斜向左上
+                        var leftUpX = tempPos[0].x - 1;
+                        var leftUpY = tempPos[0].y - 1;
+                        if (leftUpX >= 0 && leftUpY >= 0 && chessData[leftUpX][leftUpY] === 0) {
+                            pos.x = leftUpX;
+                            pos.y = leftUpY;
+                            return pos;
+                        }
+                        // 堵截斜向右下
+                        var rightDownX = tempPos[3].x + 1;
+                        var rightDownY = tempPos[3].y + 1;
+                        if (rightDownX < BOARD_SIZE && rightDownY < BOARD_SIZE && chessData[rightDownX][rightDownY] === 0) {
+                            pos.x = rightDownX;
+                            pos.y = rightDownY;
+                            return pos;
+                        }
+                    }
+                    x--;
+                    y++;
+                }
+            }
+
+            // 4. 右上→左下斜向扫描（寻找四子连珠）
+            for (var start = 0; start < BOARD_SIZE * 2 - 1; start++) {
+                var x = Math.max(0, BOARD_SIZE - 1 - start);
+                var y = Math.min(start, BOARD_SIZE - 1);
+                count = 0;
+                var tempPos = [];
+                while (x < BOARD_SIZE && y < BOARD_SIZE) {
+                    if (chessData[x][y] === humanPlayer) {
+                        count++;
+                        tempPos.push({x: x, y: y});
+                    } else {
+                        count = 0;
+                        tempPos = [];
+                    }
+                    // 找到四子连珠，寻找相邻空位堵截
+                    if (count === 4) {
+                        // 堵截斜向右上
+                        var rightUpX = tempPos[0].x - 1;
+                        var rightUpY = tempPos[0].y + 1;
+                        if (rightUpX >= 0 && rightUpY < BOARD_SIZE && chessData[rightUpX][rightUpY] === 0) {
+                            pos.x = rightUpX;
+                            pos.y = rightUpY;
+                            return pos;
+                        }
+                        // 堵截斜向左下
+                        var leftDownX = tempPos[3].x + 1;
+                        var leftDownY = tempPos[3].y - 1;
+                        if (leftDownX < BOARD_SIZE && leftDownY >= 0 && chessData[leftDownX][leftDownY] === 0) {
+                            pos.x = leftDownX;
+                            pos.y = leftDownY;
+                            return pos;
+                        }
+                    }
+                    x++;
+                    y++;
+                }
+            }
+
+            return pos; // 无四连需要堵截，返回默认值
+        }
+
+        // 【新增核心】三连预判（优先活三<两端空>，其次冲三<一端空>，覆盖四大方向，提前堵截玩家三连趋势）
+        function scanHumanThreeConnect(humanPlayer) {
+            var pos = {x: -1, y: -1};
+            var count = 0;
+
+            // 1. 横向扫描（左右方向，寻找三连）
+            for (var y = 0; y < BOARD_SIZE; y++) {
+                for (var x = 0; x < BOARD_SIZE; x++) {
+                    if (chessData[x][y] === humanPlayer) {
+                        count++;
+                        // 找到三连，判断是活三还是冲三，寻找堵截位置
+                        if (count === 3) {
+                            // 标记三连的左右边界
+                            var leftX = x - 2;
+                            var rightX = x;
+                            var isLiveThree = false; // 是否为活三（两端均空）
+                            var leftEmpty = false;
+                            var rightEmpty = false;
+
+                            // 判断左侧是否为空
+                            if (leftX - 1 >= 0 && chessData[leftX - 1][y] === 0) {
+                                leftEmpty = true;
+                            }
+                            // 判断右侧是否为空
+                            if (rightX + 1 < BOARD_SIZE && chessData[rightX + 1][y] === 0) {
+                                rightEmpty = true;
+                            }
+
+                            // 活三判断（两端均空，无阻挡）
+                            if (leftEmpty && rightEmpty) {
+                                isLiveThree = true;
+                                // 活三优先堵截一侧（选择左侧，也可优化为优先堵截更有利于AI的一侧）
+                                pos.x = leftX - 1;
+                                pos.y = y;
+                                return pos;
+                            }
+                            // 冲三判断（仅一端为空）
+                            else if (leftEmpty || rightEmpty) {
+                                // 堵截唯一的空位
+                                if (leftEmpty) {
+                                    pos.x = leftX - 1;
+                                    pos.y = y;
+                                } else {
+                                    pos.x = rightX + 1;
+                                    pos.y = y;
+                                }
+                                return pos;
+                            }
+                        }
+                    } else {
+                        // 非玩家棋子，重置计数（避免不连续的棋子误判）
+                        count = 0;
+                    }
+                }
+                // 换行重置计数
+                count = 0;
+            }
+
+            // 2. 纵向扫描（上下方向，寻找三连）
+            for (var x = 0; x < BOARD_SIZE; x++) {
+                for (var y = 0; y < BOARD_SIZE; y++) {
+                    if (chessData[x][y] === humanPlayer) {
+                        count++;
+                        // 找到三连，判断是活三还是冲三，寻找堵截位置
+                        if (count === 3) {
+                            // 标记三连的上下边界
+                            var topY = y - 2;
+                            var bottomY = y;
+                            var topEmpty = false;
+                            var bottomEmpty = false;
+
+                            // 判断上方是否为空
+                            if (topY - 1 >= 0 && chessData[x][topY - 1] === 0) {
+                                topEmpty = true;
+                            }
+                            // 判断下方是否为空
+                            if (bottomY + 1 < BOARD_SIZE && chessData[x][bottomY + 1] === 0) {
+                                bottomEmpty = true;
+                            }
+
+                            // 活三优先堵截
+                            if (topEmpty && bottomEmpty) {
+                                pos.x = x;
+                                pos.y = topY - 1;
+                                return pos;
+                            }
+                            // 冲三堵截唯一空位
+                            else if (topEmpty || bottomEmpty) {
+                                if (topEmpty) {
+                                    pos.x = x;
+                                    pos.y = topY - 1;
+                                } else {
+                                    pos.x = x;
+                                    pos.y = bottomY + 1;
+                                }
+                                return pos;
+                            }
+                        }
+                    } else {
+                        count = 0;
+                    }
+                }
+                // 换列重置计数
+                count = 0;
+            }
+
+            // 3. 左上→右下斜向扫描（寻找三连）
+            for (var start = 0; start < BOARD_SIZE * 2 - 1; start++) {
+                var x = Math.min(start, BOARD_SIZE - 1);
+                var y = Math.max(0, start - BOARD_SIZE + 1);
+                count = 0;
+                var tempPos = [];
+                while (x >= 0 && y < BOARD_SIZE) {
+                    if (chessData[x][y] === humanPlayer) {
+                        count++;
+                        tempPos.push({x: x, y: y});
+                    } else {
+                        count = 0;
+                        tempPos = [];
+                    }
+                    // 找到三连，判断活三/冲三
+                    if (count === 3) {
+                        var topLeftX = tempPos[0].x - 1;
+                        var topLeftY = tempPos[0].y - 1;
+                        var bottomRightX = tempPos[2].x + 1;
+                        var bottomRightY = tempPos[2].y + 1;
+                        var tlEmpty = false;
+                        var brEmpty = false;
+
+                        // 判断斜向左上是否为空
+                        if (topLeftX >= 0 && topLeftY >= 0 && chessData[topLeftX][topLeftY] === 0) {
+                            tlEmpty = true;
+                        }
+                        // 判断斜向右下是否为空
+                        if (bottomRightX < BOARD_SIZE && bottomRightY < BOARD_SIZE && chessData[bottomRightX][bottomRightY] === 0) {
+                            brEmpty = true;
+                        }
+
+                        // 活三优先堵截
+                        if (tlEmpty && brEmpty) {
+                            pos.x = topLeftX;
+                            pos.y = topLeftY;
+                            return pos;
+                        }
+                        // 冲三堵截
+                        else if (tlEmpty || brEmpty) {
+                            if (tlEmpty) {
+                                pos.x = topLeftX;
+                                pos.y = topLeftY;
+                            } else {
+                                pos.x = bottomRightX;
+                                pos.y = bottomRightY;
+                            }
+                            return pos;
+                        }
+                    }
+                    x--;
+                    y++;
+                }
+            }
+
+            // 4. 右上→左下斜向扫描（寻找三连）
+            for (var start = 0; start < BOARD_SIZE * 2 - 1; start++) {
+                var x = Math.max(0, BOARD_SIZE - 1 - start);
+                var y = Math.min(start, BOARD_SIZE - 1);
+                count = 0;
+                var tempPos = [];
+                while (x < BOARD_SIZE && y < BOARD_SIZE) {
+                    if (chessData[x][y] === humanPlayer) {
+                        count++;
+                        tempPos.push({x: x, y: y});
+                    } else {
+                        count = 0;
+                        tempPos = [];
+                    }
+                    // 找到三连，判断活三/冲三
+                    if (count === 3) {
+                        var topRightX = tempPos[0].x - 1;
+                        var topRightY = tempPos[0].y + 1;
+                        var bottomLeftX = tempPos[2].x + 1;
+                        var bottomLeftY = tempPos[2].y - 1;
+                        var trEmpty = false;
+                        var blEmpty = false;
+
+                        // 判断斜向右上是否为空
+                        if (topRightX >= 0 && topRightY < BOARD_SIZE && chessData[topRightX][topRightY] === 0) {
+                            trEmpty = true;
+                        }
+                        // 判断斜向左下是否为空
+                        if (bottomLeftX < BOARD_SIZE && bottomLeftY >= 0 && chessData[bottomLeftX][bottomLeftY] === 0) {
+                            blEmpty = true;
+                        }
+
+                        // 活三优先堵截
+                        if (trEmpty && blEmpty) {
+                            pos.x = topRightX;
+                            pos.y = topRightY;
+                            return pos;
+                        }
+                        // 冲三堵截
+                        else if (trEmpty || blEmpty) {
+                            if (trEmpty) {
+                                pos.x = topRightX;
+                                pos.y = topRightY;
+                            } else {
+                                pos.x = bottomLeftX;
+                                pos.y = bottomLeftY;
+                            }
+                            return pos;
+                        }
+                    }
+                    x++;
+                    y++;
+                }
+            }
+
+            return pos; // 无三连需要堵截，返回默认值
+        }
+
+        // 【辅助函数】寻找有连子趋势的位置（3连→2连，提升进攻连贯性，避免乱下）
+        function findBetterPosition(targetPlayer) {
+            var pos = {x: -1, y: -1};
+            var maxConnect = 0; // 记录最大连子数
+
+            // 遍历整个棋盘，扫描每个空位
+            for (var i = 0; i < BOARD_SIZE; i++) {
+                for (var j = 0; j < BOARD_SIZE; j++) {
+                    // 只扫描空位
+                    if (chessData[i][j] !== 0) {
+                        continue;
+                    }
+
+                    // 计算当前空位能形成的最大连子数（横向、纵向、两个斜向）
+                    var currentConnect = getMaxConnectCount(i, j, targetPlayer);
+
+                    // 保留连子数最多的位置（优先3连，其次2连）
+                    if (currentConnect > maxConnect && currentConnect >= 2) {
+                        maxConnect = currentConnect;
+                        pos.x = i;
+                        pos.y = j;
+                        // 找到3连直接返回（优先级高于2连）
+                        if (maxConnect === 3) {
+                            return pos;
+                        }
+                    }
+                }
+            }
+
+            return pos;
+        }
+
+        // 【辅助函数】计算某空位能形成的最大连子数（辅助findBetterPosition）
+        function getMaxConnectCount(x, y, targetPlayer) {
+            var maxCount = 0;
+            var count = 1;
+
+            // 横向（左右）
+            count = 1;
+            // 向右扫描
+            for (var i = 1; i < 5; i++) {
+                if (x + i < BOARD_SIZE && chessData[x + i][y] === targetPlayer) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            // 向左扫描
+            for (var i = 1; i < 5; i++) {
+                if (x - i >= 0 && chessData[x - i][y] === targetPlayer) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            maxCount = count;
+
+            // 纵向（上下）
+            count = 1;
+            // 向下扫描
+            for (var i = 1; i < 5; i++) {
+                if (y + i < BOARD_SIZE && chessData[x][y + i] === targetPlayer) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            // 向上扫描
+            for (var i = 1; i < 5; i++) {
+                if (y - i >= 0 && chessData[x][y - i] === targetPlayer) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            maxCount = Math.max(maxCount, count);
+
+            // 左上→右下斜向
+            count = 1;
+            // 右下扫描
+            for (var i = 1; i < 5; i++) {
+                if (x + i < BOARD_SIZE && y + i < BOARD_SIZE && chessData[x + i][y + i] === targetPlayer) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            // 左上扫描
+            for (var i = 1; i < 5; i++) {
+                if (x - i >= 0 && y - i >= 0 && chessData[x - i][y - i] === targetPlayer) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            maxCount = Math.max(maxCount, count);
+
+            // 右上→左下斜向
+            count = 1;
+            // 左下扫描
+            for (var i = 1; i < 5; i++) {
+                if (x + i < BOARD_SIZE && y - i >= 0 && chessData[x + i][y - i] === targetPlayer) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            // 右上扫描
+            for (var i = 1; i < 5; i++) {
+                if (x - i >= 0 && y + i < BOARD_SIZE && chessData[x - i][y + i] === targetPlayer) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            maxCount = Math.max(maxCount, count);
+
+            return maxCount;
+        }
+
+        // 【辅助函数】寻找中心及周边区域的空位（无连子趋势时，保持策略性，避免乱下）
+        function findCenterAroundPosition() {
+            var pos = {x: -1, y: -1};
+            var center = 7; // 棋盘中心坐标(7,7)
+            var aroundRange = 4; // 中心周边范围（4格内，避免太远）
+
+            // 从中心向外遍历，优先选择靠近中心的空位
+            for (var d = 0; d <= aroundRange; d++) {
+                // 遍历当前距离d的所有格子
+                for (var i = center - d; i <= center + d; i++) {
+                    for (var j = center - d; j <= center + d; j++) {
+                        // 坐标合法性判断 + 空位判断
+                        if (i >= 0 && i < BOARD_SIZE && j >= 0 && j < BOARD_SIZE && chessData[i][j] === 0) {
+                            pos.x = i;
+                            pos.y = j;
+                            return pos;
+                        }
+                    }
+                }
+            }
+
+            return pos;
+        }
+
+        // 胜负判断（判断当前落子位置是否形成五子连珠）
+        function checkWin(x, y) {
+            var player = chessData[x][y];
+            var count = 1;
+
+            // 1. 横向判断（左右方向）
+            for (var i = 1; i < 5; i++) {
+                if (x + i < BOARD_SIZE && chessData[x + i][y] === player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            for (var i = 1; i < 5; i++) {
+                if (x - i >= 0 && chessData[x - i][y] === player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count >= 5) {
+                return true;
+            }
+            count = 1;
+
+            // 2. 纵向判断（上下方向）
+            for (var i = 1; i < 5; i++) {
+                if (y + i < BOARD_SIZE && chessData[x][y + i] === player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            for (var i = 1; i < 5; i++) {
+                if (y - i >= 0 && chessData[x][y - i] === player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count >= 5) {
+                return true;
+            }
+            count = 1;
+
+            // 3. 斜向判断（左上→右下）
+            for (var i = 1; i < 5; i++) {
+                if (x + i < BOARD_SIZE && y + i < BOARD_SIZE && chessData[x + i][y + i] === player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            for (var i = 1; i < 5; i++) {
+                if (x - i >= 0 && y - i >= 0 && chessData[x - i][y - i] === player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count >= 5) {
+                return true;
+            }
+            count = 1;
+
+            // 4. 斜向判断（右上→左下）
+            for (var i = 1; i < 5; i++) {
+                if (x + i < BOARD_SIZE && y - i >= 0 && chessData[x + i][y - i] === player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            for (var i = 1; i < 5; i++) {
+                if (x - i >= 0 && y + i < BOARD_SIZE && chessData[x - i][y + i] === player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            if (count >= 5) {
+                return true;
+            }
+
+            // 未形成五子连珠
+            return false;
+        }
+
+        // 更新游戏状态提示
+        function updateGameStatus(customText) {
+            var statusElement = document.getElementById("gameStatus");
+            if (customText) {
+                statusElement.innerText = customText;
+            } else {
+                var playerText = currentPlayer === 1 ? "黑棋" : "白棋";
+                statusElement.innerText = playerText + "回合";
+            }
+        }
+    </script>
+</body>
+</html>
