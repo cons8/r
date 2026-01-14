@@ -12,6 +12,7 @@ function init() {
         // 加载字体
         tabs.className = "tabs " + config.font;
     }
+    console.log("index_tabs.js loaded")
 }
 function hideElement(elements) {
     for (var i = 0; i < elements.length; i++) {
