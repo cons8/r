@@ -302,68 +302,58 @@
             chessBoard.appendChild(piece);
         }
 
-        // 【核心优化】电脑落子（七级策略：优先获胜→堵四连→堵一步成五→三连预判→自身连子→中心周边→兜底随机）
+        // 【核心优化】电脑落子 - 基于评分的智能选择
         function computerMove() {
             if (gameOver) {
                 return;
             }
 
-            var x = -1;
-            var y = -1;
             var aiPlayer = 2; // AI自身是白棋
             var humanPlayer = 1; // 玩家是黑棋
-            var winPos = {x: -1, y: -1};
-            var blockFourPos = {x: -1, y: -1};
-            var blockThreePos = {x: -1, y: -1};
 
-            // 步骤1：最高优先级 - AI自身寻找获胜点（四子连珠缺1子，直接落子获胜）
-            winPos = findWinPosition(aiPlayer);
-            if (winPos.x !== -1 && winPos.y !== -1) {
-                x = winPos.x;
-                y = winPos.y;
+            // 遍历所有空位，计算每个位置的评分
+            var bestScore = -1;
+            var bestPos = {x: -1, y: -1};
+
+            for (var i = 0; i < BOARD_SIZE; i++) {
+                for (var j = 0; j < BOARD_SIZE; j++) {
+                    if (chessData[i][j] !== 0) {
+                        continue;
+                    }
+
+                    // 计算进攻分数（AI落子后的分数）
+                    var attackScore = evaluatePosition(i, j, aiPlayer);
+                    // 计算防守分数（堵住玩家后的分数）
+                    var defendScore = evaluatePosition(i, j, humanPlayer);
+
+                    // 综合评分：防守优先级更高，因为阻止对方获胜比自身获胜更重要
+                    var totalScore = attackScore + defendScore * 1.1;
+
+                    if (totalScore > bestScore) {
+                        bestScore = totalScore;
+                        bestPos.x = i;
+                        bestPos.y = j;
+                    }
+                }
             }
-            // 步骤2：超高级优先级 - 必堵玩家四连（无论是否能一步成五，只要连成四子就堵）
-            else if ((blockFourPos = scanHumanFourConnect(humanPlayer)).x !== -1 && blockFourPos.y !== -1) {
-                x = blockFourPos.x;
-                y = blockFourPos.y;
-            }
-            // 步骤3：次高优先级 - 堵截玩家一步成五的致命点
-            else if ((winPos = findWinPosition(humanPlayer)).x !== -1 && winPos.y !== -1) {
-                x = winPos.x;
-                y = winPos.y;
-            }
-            // 步骤4：中高优先级 - 三连预判（提前堵截玩家三连趋势，优先活三，其次冲三）
-            else if ((blockThreePos = scanHumanThreeConnect(humanPlayer)).x !== -1 && blockThreePos.y !== -1) {
-                x = blockThreePos.x;
-                y = blockThreePos.y;
-            }
-            // 步骤5：中优先级 - 寻找AI自身连子趋势（3连→2连，提升进攻连贯性，避免乱下）
-            else if ((winPos = findBetterPosition(aiPlayer)).x !== -1 && winPos.y !== -1) {
-                x = winPos.x;
-                y = winPos.y;
-            }
-            // 步骤6：低优先级 - 落子中心及周边区域（无连子趋势时，保持策略性，不随机乱飞）
-            else if ((winPos = findCenterAroundPosition()).x !== -1 && winPos.y !== -1) {
-                x = winPos.x;
-                y = winPos.y;
-            }
-            // 步骤7：兜底 - 纯随机落子（确保无有效位置时，游戏能继续进行）
-            else {
+
+            // 如果没有找到合适位置，随机落子
+            if (bestPos.x === -1) {
                 while (true) {
-                    x = Math.floor(Math.random() * BOARD_SIZE);
-                    y = Math.floor(Math.random() * BOARD_SIZE);
-                    if (chessData[x][y] === 0) {
+                    bestPos.x = Math.floor(Math.random() * BOARD_SIZE);
+                    bestPos.y = Math.floor(Math.random() * BOARD_SIZE);
+                    if (chessData[bestPos.x][bestPos.y] === 0) {
                         break;
                     }
                 }
             }
 
             // 电脑落子（白棋，玩家2）
-            chessData[x][y] = aiPlayer;
-            drawChessPiece(x, y, aiPlayer);
+            chessData[bestPos.x][bestPos.y] = aiPlayer;
+            drawChessPiece(bestPos.x, bestPos.y, aiPlayer);
 
             // 判断电脑是否获胜
-            if (checkWin(x, y)) {
+            if (checkWin(bestPos.x, bestPos.y)) {
                 gameOver = true;
                 alert("电脑（白棋）获胜！");
                 updateGameStatus("电脑获胜，点击重新开始");
@@ -373,6 +363,106 @@
             // 切换回玩家（黑棋）
             currentPlayer = humanPlayer;
             updateGameStatus();
+        }
+
+        // 【核心】评估某个位置的分数
+        function evaluatePosition(x, y, targetPlayer) {
+            var score = 0;
+            var opponent = targetPlayer === 1 ? 2 : 1;
+
+            // 临时落子，模拟评估
+            chessData[x][y] = targetPlayer;
+
+            // 四个方向评估：横、竖、左斜、右斜
+            var directions = [
+                {dx: 1, dy: 0},   // 横向
+                {dx: 0, dy: 1},   // 纵向
+                {dx: 1, dy: 1},   // 左斜
+                {dx: 1, dy: -1}   // 右斜
+            ];
+
+            for (var d = 0; d < directions.length; d++) {
+                var result = analyzeLine(x, y, directions[d].dx, directions[d].dy, targetPlayer, opponent);
+                score += result.score;
+
+                // 如果形成五连，给予最高分
+                if (result.count >= 5) {
+                    score += 100000;
+                }
+            }
+
+            // 恢复棋盘
+            chessData[x][y] = 0;
+
+            return score;
+        }
+
+        // 分析某个方向上的连子情况
+        function analyzeLine(x, y, dx, dy, player, opponent) {
+            var count = 1; // 当前落子算1个
+            var openEnds = 0; // 两端是否为空
+
+            // 正方向检查
+            for (var i = 1; i < 5; i++) {
+                var nx = x + dx * i;
+                var ny = y + dy * i;
+                if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE) {
+                    break;
+                }
+                if (chessData[nx][ny] === player) {
+                    count++;
+                } else if (chessData[nx][ny] === 0) {
+                    openEnds++;
+                    break;
+                } else {
+                    break;
+                }
+            }
+
+            // 负方向检查
+            for (var i = 1; i < 5; i++) {
+                var nx = x - dx * i;
+                var ny = y - dy * i;
+                if (nx < 0 || nx >= BOARD_SIZE || ny < 0 || ny >= BOARD_SIZE) {
+                    break;
+                }
+                if (chessData[nx][ny] === player) {
+                    count++;
+                } else if (chessData[nx][ny] === 0) {
+                    openEnds++;
+                    break;
+                } else {
+                    break;
+                }
+            }
+
+            // 根据连子数和两端情况打分
+            var score = 0;
+            if (count >= 5) {
+                score = 100000; // 五连
+            } else if (count === 4) {
+                if (openEnds === 2) {
+                    score = 10000; // 活四
+                } else if (openEnds === 1) {
+                    score = 1000; // 冲四
+                }
+            } else if (count === 3) {
+                if (openEnds === 2) {
+                    score = 1000; // 活三
+                } else if (openEnds === 1) {
+                    score = 100; // 冲三
+                }
+            } else if (count === 2) {
+                if (openEnds === 2) {
+                    score = 100; // 活二
+                } else if (openEnds === 1) {
+                    score = 10; // 冲二
+                }
+            } else if (count === 1 && openEnds > 0) {
+                score = 10; // 活一
+            }
+
+            return {count: count, openEnds: openEnds, score: score};
         }
 
         // 【辅助函数】寻找自身获胜点/玩家致命堵截点（落子后直接形成五子连珠）
