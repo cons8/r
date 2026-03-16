@@ -30,10 +30,10 @@ body {
 .app-list {
     display: block;
     margin-top: 8pt;
+    text-align: center;
 }
 
 .app {
-    float: left;
     background: white;
     border-radius: 8px;
     text-align: center;
