@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全部应用</title>
+    <title>最近更新</title>
     <style>
         * {
             margin: 0;
@@ -14,28 +14,76 @@
 
         body {
             padding: 16px;
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
-            /* 让body在大屏幕上居中，避免过宽 */
+            background-color: #f5f5f0;
+            color: #333;
+            font-family: "Arial", "Microsoft YaHei", sans-serif;
         }
 
         .header {
             font-size: 18px;
-            padding: 8px 0;
-            margin-bottom: 20px;
-            font-weight: 500;
-            border-bottom: 1px solid #000000;
+            padding: 12px 0;
+            margin-bottom: 24px;
+            font-weight: bold;
+            border-bottom: 2px solid #333;
+            text-align: center;
         }
 
         .goback {
             text-decoration: none;
             color: black;
+            float: left;
         }
 
         .goback svg,
         .header-title {
             display: inline-block;
             vertical-align: middle;
+        }
+
+        .header-title {
+            margin-left: 4px;
+        }
+
+        .update-list {
+            list-style: none;
+        }
+
+        .update-item {
+            background: #fff;
+            border: 1px solid #999;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .update-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .update-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .update-content {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 10px;
+            background: #333;
+            color: #fff;
+            border-radius: 2px;
+            margin-right: 4px;
         }
     </style>
 </head>
@@ -46,13 +94,28 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20pt" height="20pt" viewBox="0 0 24 24">
                 <path fill="#000000" d="m7.825 13l5.6 5.6L12 20l-8-8l8-8l1.425 1.4l-5.6 5.6H20v2z" />
             </svg>
-            <div class="header-title">主页</div>
+            <span class="header-title">返回</span>
         </a>
+        <span class="header-title">最近更新</span>
     </div>
-    <div class="container">
-        <p>五子棋：新增五子棋小游戏</p>
-        <p>井字棋：新增井字棋小游戏</p>
-        <p>数独：支持小数字标记功能</p>
-    </div>
+
+    <ul class="update-list">
+        <li class="update-item">
+            <div class="update-date">2026-03-16</div>
+            <div class="update-title">五子棋AI优化</div>
+            <div class="update-content">
+                <span class="tag">游戏</span>
+                优化五子棋人机对战AI算法，采用评分系统替代固定优先级判断，平衡进攻与防守
+            </div>
+        </li>
+        <li class="update-item">
+            <div class="update-date">2026-03-16</div>
+            <div class="update-title">首页兼容性优化</div>
+            <div class="update-content">
+                <span class="tag">修复</span>
+                优化老旧Kindle设备兼容性，移除CSS Grid改用float布局，修复弹窗居中问题
+            </div>
+        </li>
+    </ul>
 </body>
 </html>
