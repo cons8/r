@@ -30,7 +30,7 @@ function init() {
     }
 }
 function setting() {
-    showLog({ title: "设置", content: "欢迎使用墨枢！<br>在这里你可以自定义欢迎语和Logo的显示与隐藏。" });
+    showLog("设置", "欢迎使用墨枢！<br>在这里你可以自定义欢迎语和Logo的显示与隐藏。");
     document.getElementById('fontSelect').value = config.font;
 }
 
@@ -44,7 +44,7 @@ function submitLog() {
         welcomeMessageTitle.innerHTML = log;
         hideLog();
     } else {
-        showLog({ title: "提示" });
+        showLog("提示");
     }
 }
 
@@ -60,12 +60,40 @@ function fixText(text) {
     return text.replace(/\r?\n/g, "<br/>"); // 匹配 \n 或 \r\n，替换为 <br/>
 }
 
-function showLog({ title = "提示", content = "欢迎使用墨枢！<br>在这里你可以自定义欢迎语和Logo的显示与隐藏。" }) {
-    document.getElementById('mask').style.display = 'block';
-    document.getElementById('log').style.display = 'flex';
+function showLog(opt) {
+    var title = opt && opt.title ? opt.title : "提示";
+    var content = opt && opt.content ? opt.content : "欢迎使用墨枢！<br>在这里你可以自定义欢迎语和Logo的显示与隐藏。";
+
+    var logEl = document.getElementById('log');
+    var maskEl = document.getElementById('mask');
+
+    // 先显示出来才能获取正确的高度
+    maskEl.style.display = 'block';
+    logEl.style.display = 'flex';
     document.getElementById('log-content').innerHTML = content;
     document.getElementById('log-title').innerHTML = title;
 
+    // 动态计算居中位置（兼容老设备，不使用transform）
+    var winW = window.innerWidth || document.documentElement.clientWidth;
+    var winH = window.innerHeight || document.documentElement.clientHeight;
+    var logW = 400;
+    var logH = logEl.offsetHeight || 400;
+
+    // 确保不超出屏幕
+    if (logW > winW - 20) {
+        logW = winW - 20;
+    }
+
+    var left = (winW - logW) / 2;
+    var top = (winH - logH) / 2;
+
+    // 确保不超出边界，最小 top 为 winH 的 20%
+    if (top < winH * 0.2) top = winH * 0.2;
+    if (left < 10) left = 10;
+
+    logEl.style.left = left + 'px';
+    logEl.style.top = top + 'px';
+    logEl.style.width = logW + 'px';
 }
 function hideLog() {
     document.getElementById('mask').style.display = 'none';

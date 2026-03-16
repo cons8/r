@@ -1,16 +1,16 @@
         .log {
             min-width: 250pt;
-            max-width: 800pt;
+            max-width: 90%;
+            width: 400px;
+            max-height: 80%;
+            overflow: auto;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            z-index: 1000;
             background: white;
             border-radius: 8px;
             border: 3px solid black;
             display: none;
             flex-direction: column;
-            z-index: 1000;
             box-sizing: border-box;
             padding: 32px;
         }
@@ -26,7 +26,7 @@
             min-height: 80px;
             width: 100%;
             padding: 0.5rem;
-            height: fit-content;
+            height: auto;
             border: 2px solid black;
             border-radius: 4px;
         }

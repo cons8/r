@@ -1,9 +1,9 @@
 function showLog() {
-    document.querySelector('.mask').style.display = 'block';
-    document.querySelector('.log').style.display = 'flex';
+    document.getElementById('mask').style.display = 'block';
+    document.getElementById('log').style.display = 'flex';
 }
 
 function hideLog() {
-    document.querySelector('.mask').style.display = 'none';
-    document.querySelector('.log').style.display = 'none';
+    document.getElementById('mask').style.display = 'none';
+    document.getElementById('log').style.display = 'none';
 }
