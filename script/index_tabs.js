@@ -12,6 +12,9 @@ function init() {
         // 加载字体
         tabs.className = "tabs " + config.font;
     }
+    // 初始化：只显示推荐分类
+    hideElement(apps);
+    showElement(recommends);
     console.log("index_tabs.js loaded")
 }
 function hideElement(elements) {

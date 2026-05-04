@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于墨枢</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #ffffff;
+            color: #333;
+            font-family: "Arial", "Microsoft YaHei", sans-serif;
+        }
+
+        /* 顶部标题 */
+        .book-header {
+            border-bottom: 2px solid #333;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .book-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .book-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        /* 目录 */
+        .toc {
+            padding: 16px;
+            border-bottom: 1px solid #999;
+        }
+
+        .toc-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            border-left: 3px solid #333;
+            padding-left: 8px;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-item {
+            padding: 8px 0;
+            font-size: 15px;
+        }
+
+        .toc-item a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .toc-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* 章节内容 */
+        .chapter {
+            padding: 16px;
+            border-bottom: 1px solid #999;
+        }
+
+        .chapter:last-child {
+            border-bottom: none;
+        }
+
+        .chapter-num {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .chapter-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            border-left: 3px solid #333;
+            padding-left: 8px;
+        }
+
+        .chapter-content {
+            font-size: 15px;
+            line-height: 1.8;
+            padding-left: 11px;
+        }
+
+        .chapter-content p {
+            margin-bottom: 12px;
+        }
+
+        .chapter-content ul {
+            margin-left: 18px;
+            margin-bottom: 12px;
+        }
+
+        .chapter-content li {
+            margin-bottom: 6px;
+        }
+
+        /* 功能模块卡片 */
+        .feature-grid {
+            display: block;
+        }
+
+        .feature-item {
+            border: 1px solid #999;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .feature-name {
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* 链接样式 */
+        .chapter-content a {
+            color: #333;
+        }
+
+        /* 返回链接 */
+        .goback {
+            display: block;
+            width: 120px;
+            padding: 10px 20px;
+            margin: 16px auto;
+            border: 2px solid #333;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .goback:hover {
+            background-color: #333;
+            color: #fff;
+        }
+
+        /* 底部 */
+        .book-footer {
+            padding: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="book-header">
+        <div class="book-title">墨 枢</div>
+        <div class="book-subtitle">MoShu - 墨水屏导航系统</div>
+    </div>
+
+    <div class="toc">
+        <a class="goback" href="../index.html">返回主页</a>
+        <div class="toc-title">目 录</div>
+        <ul class="toc-list">
+            <li class="toc-item"><a href="#ch1">第一章 · 项目简介</a></li>
+            <li class="toc-item"><a href="#ch2">第二章 · 功能模块</a></li>
+            <li class="toc-item"><a href="#ch3">第三章 · 使用指南</a></li>
+        </ul>
+    </div>
+
+    <div class="chapter" id="ch1">
+        <div class="chapter-num">第一章</div>
+        <div class="chapter-title">项目简介</div>
+        <div class="chapter-content">
+            <p>墨枢 (MoShu) 是一款专为墨水屏设备设计的沉浸式导航系统，整合资源聚合、书籍推荐、工具集成等核心模块。</p>
+            <p>因电子墨水屏幕的特性（刷新率低、灰度表现有限），在进行页面设计时遵循极简原则，确保在各类墨水屏设备上都能获得良好的阅读体验。</p>
+        </div>
+    </div>
+
+    <div class="chapter" id="ch2">
+        <div class="chapter-num">第二章</div>
+        <div class="chapter-title">功能模块</div>
+        <div class="chapter-content">
+            <p>本项目包含以下核心功能：</p>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-name">网址导航</div>
+                    <div class="feature-desc">分类展示常用网站，支持推荐、工具、游戏、网站四个分类</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-name">时钟</div>
+                    <div class="feature-desc">实时显示当前时间</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-name">计时器</div>
+                    <div class="feature-desc">倒计时功能，适合"盖泡面"等场景</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-name">番茄钟</div>
+                    <div class="feature-desc">时间管理工具，提升专注力</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-name">游戏中心</div>
+                    <div class="feature-desc">包含2048、五子棋、数独、贪吃蛇、井字棋等经典游戏</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-name">自定义设置</div>
+                    <div class="feature-desc">支持自定义欢迎语、Logo显示、字体切换</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chapter" id="ch3">
+        <div class="chapter-num">第三章</div>
+        <div class="chapter-title">使用指南</div>
+        <div class="chapter-content">
+            <p><strong>访问方式</strong>：直接访问 <a href="https://cons8.github.io/r">https://cons8.github.io/r</a> 即可使用。</p>
+            <p><strong>书签收藏</strong>：在Kindle浏览器中将链接添加为书签，方便下次快速访问。</p>
+        </div>
+    </div>
+
+    <div class="book-footer">
+        声明：本项目仅供学习交流使用
+    </div>
+
+</body>
+
+</html>

@@ -15,7 +15,7 @@ function init() {
     if (userConfig) {
         try {
             userConfig = JSON.parse(userConfig);
-            config = { ...config, ...userConfig };
+            config = Object.assign(config, userConfig);
             welcomeMessageTitle.innerHTML = config.message;
             welcomeMessageTitle.className = config.font;
             if (!config.logo) {
@@ -87,8 +87,8 @@ function showLog(opt) {
     var left = (winW - logW) / 2;
     var top = (winH - logH) / 2;
 
-    // 确保不超出边界，最小 top 为 winH 的 20%
-    if (top < winH * 0.2) top = winH * 0.2;
+    // 确保不超出边界，最小 top 为 winH 的 10%
+    if (top < winH * 0.1) top = winH * 0.1;
     if (left < 10) left = 10;
 
     logEl.style.left = left + 'px';

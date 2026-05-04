@@ -26,7 +26,7 @@ body {
     line-height: 1;
 }
 
-/* 应用列表 */
+/* 应用列表 - 基础布局（兼容老设备） */
 .app-list {
     display: block;
     margin-top: 8pt;
@@ -45,6 +45,22 @@ body {
     padding: 6pt;
     width: 70pt;
     height: 60pt;
+}
+
+/* CSS Grid 布局（支持 CSS3 的设备） */
+@supports (display: grid) {
+    .app-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(78pt, 1fr));
+        gap: 8pt;
+        text-align: center;
+    }
+
+    .app {
+        width: auto;
+        height: auto;
+        margin: 0;
+    }
 }
 
 .app .avater {

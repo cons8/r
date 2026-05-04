@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 16px;
+            background-color: #ffffff;
+            color: #333;
+            font-family: "Arial", "Microsoft YaHei", sans-serif;
+        }
+
+        .header {
+            padding: 12px 0;
+            border-bottom: 2px solid #333;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .goback {
+            position: absolute;
+            left: 16px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .tool-section {
+            border: 2px solid #333;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            padding: 16px;
+        }
+
+        .tool-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            border-left: 3px solid #333;
+            padding-left: 8px;
+        }
+
+        .tool-row {
+            text-align: center;
+        }
+
+        .coin {
+            width: 70px;
+            height: 70px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            line-height: 70px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .dice {
+            width: 70px;
+            height: 70px;
+            border: 3px solid #333;
+            border-radius: 10px;
+            margin: 0 auto 10px;
+            background: #fff;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .dice-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .result {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 随机数字 */
+        .number-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .number-input input {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #333;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .number-btn {
+            padding: 8px 20px;
+            border: 2px solid #333;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .number-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        .number-result {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* 随机选择 */
+        .choice-input {
+            margin-bottom: 10px;
+        }
+
+        .choice-input textarea {
+            width: 100%;
+            height: 60px;
+            padding: 8px;
+            border: 2px solid #333;
+            border-radius: 4px;
+            font-size: 14px;
+            resize: none;
+        }
+
+        .choice-hint {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .choice-btn {
+            padding: 8px 20px;
+            border: 2px solid #333;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .choice-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        .choice-result {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 10px;
+            border: 2px dashed #333;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* 石头剪刀布 */
+        .rps-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .rps-btn {
+            padding: 12px 20px;
+            border: 2px solid #333;
+            border-radius: 4px;
+            background: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .rps-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        .rps-result {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <a class="goback" href="../index.html">返回</a>
+        <div class="header-title">随机工具</div>
+    </div>
+
+    <!-- 抛硬币 -->
+    <div class="tool-section">
+        <div class="tool-title">抛硬币</div>
+        <div class="tool-row">
+            <div class="coin" id="coin" onclick="flipCoin()">-</div>
+            <div class="result" id="coin-result">点击硬币开始</div>
+        </div>
+    </div>
+
+    <!-- 掷骰子 -->
+    <div class="tool-section">
+        <div class="tool-title">掷骰子</div>
+        <div class="tool-row">
+            <div class="dice" id="dice" onclick="rollDice()"></div>
+            <div class="result" id="dice-result">点击骰子开始</div>
+        </div>
+    </div>
+
+    <!-- 随机数字 -->
+    <div class="tool-section">
+        <div class="tool-title">随机数字</div>
+        <div class="number-result" id="number-result"></div>
+        <div class="number-input">
+            <input type="number" id="min-num" value="1" min="0">
+            <span style="line-height: 40px;">~</span>
+            <input type="number" id="max-num" value="100" min="0">
+        </div>
+        <div style="text-align: center;">
+            <button class="number-btn" onclick="randomNumber()">生成</button>
+        </div>
+    </div>
+
+    <!-- 随机选择 -->
+    <div class="tool-section">
+        <div class="tool-title">随机选择</div>
+        <div class="choice-input">
+            <div class="choice-hint">输入选项，每行一个</div>
+            <textarea id="choice-options">苹果
+香蕉
+橘子</textarea>
+        </div>
+        <div style="text-align: center;">
+            <button class="choice-btn" onclick="randomChoice()">选择</button>
+        </div>
+        <div class="choice-result" id="choice-result"></div>
+    </div>
+
+    <!-- 石头剪刀布 -->
+    <div class="tool-section">
+        <div class="tool-title">石头剪刀布</div>
+        <div class="rps-result" id="rps-result">选择你的手势</div>
+        <div class="rps-buttons">
+            <button class="rps-btn" onclick="playRPS('rock')">石头</button>
+            <button class="rps-btn" onclick="playRPS('scissor')">剪刀</button>
+            <button class="rps-btn" onclick="playRPS('paper')">布</button>
+        </div>
+    </div>
+
+    <script>
+        // ========== 骰子点数布局 ==========
+        var diceLayouts = {
+            1: [50, 50],
+            2: [20, 20, 80, 80],
+            3: [20, 20, 50, 50, 80, 80],
+            4: [20, 20, 80, 20, 20, 80, 80, 80],
+            5: [20, 20, 80, 20, 50, 50, 20, 80, 80, 80],
+            6: [20, 20, 80, 20, 20, 50, 80, 50, 20, 80, 80, 80]
+        };
+
+        function flipCoin() {
+            var coin = document.getElementById('coin');
+            var result = document.getElementById('coin-result');
+            var isFront = Math.random() > 0.5;
+
+            coin.innerHTML = isFront ? '正' : '反';
+            result.innerHTML = isFront ? '正面朝上' : '反面朝上';
+        }
+
+        function rollDice() {
+            var dice = document.getElementById('dice');
+            var result = document.getElementById('dice-result');
+            var num = Math.floor(Math.random() * 6) + 1;
+
+            dice.innerHTML = '';
+
+            var positions = diceLayouts[num];
+            for (var i = 0; i < positions.length; i += 2) {
+                var dot = document.createElement('div');
+                dot.className = 'dice-dot';
+                dot.style.left = positions[i] + '%';
+                dot.style.top = positions[i + 1] + '%';
+                dice.appendChild(dot);
+            }
+
+            result.innerHTML = '摇出了 ' + num + ' 点';
+        }
+
+        function randomNumber() {
+            var min = parseInt(document.getElementById('min-num').value) || 0;
+            var max = parseInt(document.getElementById('max-num').value) || 100;
+            var result = document.getElementById('number-result');
+
+            if (min > max) {
+                var temp = min;
+                min = max;
+                max = temp;
+            }
+
+            var num = Math.floor(Math.random() * (max - min + 1)) + min;
+            result.innerHTML = num;
+        }
+
+        function randomChoice() {
+            var optionsText = document.getElementById('choice-options').value;
+            var result = document.getElementById('choice-result');
+
+            if (!optionsText.trim()) {
+                result.innerHTML = '请输入选项';
+                return;
+            }
+
+            var options = optionsText.split('\n').filter(function(line) {
+                return line.trim() !== '';
+            });
+
+            if (options.length === 0) {
+                result.innerHTML = '请输入有效选项';
+                return;
+            }
+
+            var chosen = options[Math.floor(Math.random() * options.length)];
+            result.innerHTML = chosen;
+        }
+
+        function playRPS(playerChoice) {
+            var choices = ['rock', 'scissor', 'paper'];
+            var computerChoice = choices[Math.floor(Math.random() * 3)];
+            var result = document.getElementById('rps-result');
+
+            var choiceNames = {
+                'rock': '石头',
+                'scissor': '剪刀',
+                'paper': '布'
+            };
+
+            var playerName = choiceNames[playerChoice];
+            var computerName = choiceNames[computerChoice];
+
+            var outcome;
+            if (playerChoice === computerChoice) {
+                outcome = '平局';
+            } else if (
+                (playerChoice === 'rock' && computerChoice === 'scissor') ||
+                (playerChoice === 'scissor' && computerChoice === 'paper') ||
+                (playerChoice === 'paper' && computerChoice === 'rock')
+            ) {
+                outcome = '你赢了';
+            } else {
+                outcome = '你输了';
+            }
+
+            result.innerHTML = '你：' + playerName + ' vs 电脑：' + computerName + '<br>' + outcome;
+        }
+    </script>
+
+</body>
+
+</html>
